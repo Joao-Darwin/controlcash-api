@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/controlCashApi?useTimezone=true&serverTimezone=UTC
+    url: jdbc:postgresql://localhost:5432/database?useTimezone=true&serverTimezone=UTC
     username: postgres
-    password: P@ssw0rd
+    password: password
   jpa:
     hibernate:
       ddl-auto: update
