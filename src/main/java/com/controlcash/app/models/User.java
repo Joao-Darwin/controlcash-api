@@ -119,4 +119,12 @@ public class User implements UserDetails {
 
         return roles;
     }
+
+    public List<Goal> getGoals() {
+        return goals;
+    }
+
+    public void setGoals(List<Goal> goals) {
+        this.goals = goals;
+    }
 }
