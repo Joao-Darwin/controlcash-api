@@ -33,6 +33,9 @@ public class User implements UserDetails {
     @JoinTable(name = "user_permission", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private List<Permission> permissions;
 
+    @OneToMany(mappedBy = "user")
+    private List<Goal> goals;
+
     public User() {
     }
 
