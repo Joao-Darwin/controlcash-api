@@ -22,6 +22,9 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "category")
     private List<Goal> goals;
 
+    @ManyToMany(mappedBy = "categories")
+    private List<Transaction> transactions;
+
     public Category() {
     }
 
