@@ -96,4 +96,8 @@ public class Transaction implements Serializable {
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType.getCode();
     }
+
+    public User getUser() {
+        return user;
+    }
 }

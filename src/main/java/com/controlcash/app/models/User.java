@@ -136,4 +136,12 @@ public class User implements UserDetails {
     public void setGoals(List<Goal> goals) {
         this.goals = goals;
     }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 }
