@@ -28,6 +28,9 @@ public class Transaction implements Serializable {
     private Integer amountRepeat;
     private Integer transactionType;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private User user;
+
     public Transaction() {
     }
 

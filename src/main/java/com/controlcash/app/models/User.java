@@ -36,6 +36,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Goal> goals;
 
+    @OneToMany(mappedBy = "user")
+    private List<Transaction> transactions;
+
     public User() {
     }
 
