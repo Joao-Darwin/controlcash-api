@@ -18,7 +18,7 @@ public class Goal implements Serializable {
     private UUID id;
     @Column(nullable = false)
     private Date dueDate;
-    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (value < 0)")
+    @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
     private Double value;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

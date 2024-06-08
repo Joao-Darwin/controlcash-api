@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Table(name = "transactions")
 public class Transaction implements Serializable {
 
     @Serial
@@ -23,9 +24,9 @@ public class Transaction implements Serializable {
     private String description;
     @Column(nullable = false)
     private Date createdDate;
-    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (value < 0)")
+    @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
     private Double value;
-    @Column(nullable = false, columnDefinition = "INT CHECK (amountRepeat <= 0)")
+    @Column(nullable = false, columnDefinition = "INT CHECK (amount_repeat <= 0)")
     private Integer amountRepeat;
     @Column(nullable = false)
     private Integer transactionType;
