@@ -18,6 +18,9 @@ public class Transaction implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
+    private String name;
+    private String description;
+    @Column(nullable = false)
     private Date createdDate;
     @Column(nullable = false, columnDefinition = "DOUBLE CHECK (value < 0)")
     private Double value;
@@ -28,8 +31,10 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-    public Transaction(UUID id, Date createdDate, Double value, Integer amountRepeat, TransactionType transactionType) {
+    public Transaction(UUID id, String name, String description, Date createdDate, Double value, Integer amountRepeat, TransactionType transactionType) {
         this.id = id;
+        this.name = name;
+        this.description = description;
         this.createdDate = createdDate;
         this.value = value;
         this.amountRepeat = amountRepeat;
@@ -38,6 +43,22 @@ public class Transaction implements Serializable {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getCreatedDate() {
