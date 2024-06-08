@@ -26,6 +26,7 @@ public class Transaction implements Serializable {
     private Double value;
     @Column(nullable = false, columnDefinition = "INT CHECK (amountRepeat <= 0)")
     private Integer amountRepeat;
+    @Column(nullable = false)
     private Integer transactionType;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

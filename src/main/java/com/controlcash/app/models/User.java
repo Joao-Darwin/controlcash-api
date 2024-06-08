@@ -21,12 +21,18 @@ public class User implements UserDetails {
     private String userName;
     @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
     private String fullName;
+    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (salary < 0)")
     private Double salary;
+    @Column(nullable = false)
     private boolean accountNonExpired;
+    @Column(nullable = false)
     private boolean accountNonLocked;
+    @Column(nullable = false)
     private boolean credentialsNonExpired;
+    @Column(nullable = false)
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)

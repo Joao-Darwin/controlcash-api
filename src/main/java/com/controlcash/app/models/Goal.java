@@ -16,7 +16,9 @@ public class Goal implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
     private Date dueDate;
+    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (value < 0)")
     private Double value;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
