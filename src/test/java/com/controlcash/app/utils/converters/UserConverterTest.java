@@ -1,6 +1,7 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.request.UserCreateRequestDTO;
+import com.controlcash.app.dtos.response.UserCreateResponseDTO;
 import com.controlcash.app.models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -40,5 +41,22 @@ public class UserConverterTest {
         UserCreateRequestDTO userCreateRequestDTO = null;
 
         Assertions.assertThrows(NullPointerException.class, () -> UserConverter.convertUserCreateRequestDTOToUser(userCreateRequestDTO));
+    }
+
+    @Test
+    public void testConvertUserToUserCreateResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateRequestDTO() {
+        String expectedUserName = "joodarwin";
+        String expectedEmail = "joaodarwin@email.com";
+        String expectedPassword = "123456";
+        User user = new User();
+        user.setUserName(expectedUserName);
+        user.setEmail(expectedEmail);
+        user.setPassword(expectedPassword);
+
+        UserCreateResponseDTO userCreateResponseDTO = UserConverter.convertUserToUserCreateResponseDTO(user);
+
+        Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
+        Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
+        Assertions.assertEquals(expectedPassword, userCreateResponseDTO.password());
     }
 }
