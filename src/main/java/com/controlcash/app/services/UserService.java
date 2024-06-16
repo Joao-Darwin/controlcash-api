@@ -43,19 +43,12 @@ public class UserService {
     }
 
     public UserCompleteResponseDTO findById(UUID id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        boolean userExists = userOptional.isPresent();
-
-        if (!userExists) {
-            throw new UserNotFoundException("User not found. Id used: " + id);
-        }
-
-        User user = userOptional.get();
+        User user = findUserByIdAndVerifyIfExists(id);
 
        return UserConverter.convertUserToUserCompleteResponseDTO(user);
     }
 
-    public UserCreateResponseDTO update(UUID id, UserCreateRequestDTO userCreateRequestDTO) {
+    private User findUserByIdAndVerifyIfExists(UUID id) {
         Optional<User> userOptional = userRepository.findById(id);
         boolean userExists = userOptional.isPresent();
 
@@ -63,7 +56,11 @@ public class UserService {
             throw new UserNotFoundException("User not found. Id used: " + id);
         }
 
-        User user = userOptional.get();
+        return userOptional.get();
+    }
+
+    public UserCreateResponseDTO update(UUID id, UserCreateRequestDTO userCreateRequestDTO) {
+        User user = findUserByIdAndVerifyIfExists(id);
 
         updateUser(user, userCreateRequestDTO);
 
@@ -82,14 +79,7 @@ public class UserService {
     }
 
     public void delete(UUID id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        boolean userExists = userOptional.isPresent();
-
-        if (!userExists) {
-            throw new UserNotFoundException("User not found. Id used: " + id);
-        }
-
-        User user = userOptional.get();
+        User user = findUserByIdAndVerifyIfExists(id);
 
         userRepository.delete(user);
     }
