@@ -47,11 +47,24 @@ public class UserService {
         boolean userExists = userOptional.isPresent();
 
         if (!userExists) {
-            throw new UserNotFoundException("User not found. Id: " + id);
+            throw new UserNotFoundException("User not found. Id used: " + id);
         }
 
         User user = userOptional.get();
 
        return UserConverter.convertUserToUserCompleteResponseDTO(user);
+    }
+
+    public void delete(UUID id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        boolean userExists = userOptional.isPresent();
+
+        if (!userExists) {
+            throw new UserNotFoundException("User not found. Id used: " + id);
+        }
+
+        User user = userOptional.get();
+
+        userRepository.delete(user);
     }
 }
