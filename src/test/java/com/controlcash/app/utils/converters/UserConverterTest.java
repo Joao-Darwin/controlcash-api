@@ -2,12 +2,17 @@ package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.request.UserCreateRequestDTO;
 import com.controlcash.app.dtos.response.UserAllResponseDTO;
+import com.controlcash.app.dtos.response.UserCompleteResponseDTO;
 import com.controlcash.app.dtos.response.UserCreateResponseDTO;
+import com.controlcash.app.models.Goal;
+import com.controlcash.app.models.Permission;
+import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.List;
 import java.util.UUID;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -47,7 +52,7 @@ public class UserConverterTest {
     }
 
     @Test
-    public void testConvertUserToUserCreateResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateRequestDTO() {
+    public void testConvertUserToUserCreateResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateResponseDTO() {
         String expectedUserName = "joodarwin";
         String expectedEmail = "joaodarwin@email.com";
         User user = new User();
@@ -61,7 +66,7 @@ public class UserConverterTest {
     }
 
     @Test
-    public void testConvertUserToUserAllResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateRequestDTO() {
+    public void testConvertUserToUserAllResponseDTO_WhenUserIsPassed_ShouldReturnUserUserAllResponseDTO() {
         UUID expectedId = UUID.randomUUID();
         String expectedUserName = "joodarwin";
         String expectedEmail = "joaodarwin@email.com";
@@ -75,5 +80,42 @@ public class UserConverterTest {
         Assertions.assertEquals(expectedId, userCreateResponseDTO.id());
         Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
+    }
+
+    @Test
+    public void testConvertUserToUserCompleteResponseDTO_WhenUserIsPassed_ShouldReturnUserCompleteResponseDTO() {
+        UUID expectedId = UUID.randomUUID();
+        String expectedUserName = "joodarwin";
+        String expectedEmail = "joaodarwin@email.com";
+        String expectedPassword = "securePassword123";
+        String expectedFullName = "João Darwin";
+        Double expectedSalary = 5000.0;
+        List<Permission> expectedPermissions = List.of();
+        List<String> expectedPermissionsLikeString = List.of();
+        List<Goal> expectedGoals = List.of(new Goal());
+        List<Transaction> expectedTransactions = List.of(new Transaction());
+
+        User user = new User();
+        user.setId(expectedId);
+        user.setUserName(expectedUserName);
+        user.setEmail(expectedEmail);
+        user.setPassword(expectedPassword);
+        user.setFullName(expectedFullName);
+        user.setSalary(expectedSalary);
+        user.setPermissions(expectedPermissions);
+        user.setGoals(expectedGoals);
+        user.setTransactions(expectedTransactions);
+
+        UserCompleteResponseDTO userCompleteResponseDTO = UserConverter.convertUserToUserCompleteResponseDTO(user);
+
+        Assertions.assertEquals(expectedId, userCompleteResponseDTO.id());
+        Assertions.assertEquals(expectedUserName, userCompleteResponseDTO.userName());
+        Assertions.assertEquals(expectedEmail, userCompleteResponseDTO.email());
+        Assertions.assertEquals(expectedPassword, userCompleteResponseDTO.password());
+        Assertions.assertEquals(expectedFullName, userCompleteResponseDTO.fullName());
+        Assertions.assertEquals(expectedSalary, userCompleteResponseDTO.salary());
+        Assertions.assertEquals(expectedPermissionsLikeString, userCompleteResponseDTO.permissions());
+        Assertions.assertEquals(expectedGoals, userCompleteResponseDTO.goals());
+        Assertions.assertEquals(expectedTransactions, userCompleteResponseDTO.transactions());
     }
 }
