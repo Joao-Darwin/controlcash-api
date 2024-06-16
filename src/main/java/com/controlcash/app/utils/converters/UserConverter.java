@@ -2,6 +2,7 @@ package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.request.UserCreateRequestDTO;
 import com.controlcash.app.dtos.response.UserAllResponseDTO;
+import com.controlcash.app.dtos.response.UserCompleteResponseDTO;
 import com.controlcash.app.dtos.response.UserCreateResponseDTO;
 import com.controlcash.app.models.User;
 
@@ -28,5 +29,9 @@ public class UserConverter {
 
     public static UserAllResponseDTO convertUserToUserAllResponseDTO(User user) {
         return new UserAllResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+    }
+
+    public static UserCompleteResponseDTO convertUserToUserCompleteResponseDTO(User user) {
+        return new UserCompleteResponseDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getFullName(), user.getSalary(), user.getRoles(), user.getGoals(), user.getTransactions());
     }
 }
