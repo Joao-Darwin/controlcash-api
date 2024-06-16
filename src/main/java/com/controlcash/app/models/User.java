@@ -52,6 +52,10 @@ public class User implements UserDetails {
         return this.id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
