@@ -55,6 +55,32 @@ public class UserService {
        return UserConverter.convertUserToUserCompleteResponseDTO(user);
     }
 
+    public UserCreateResponseDTO update(UUID id, UserCreateRequestDTO userCreateRequestDTO) {
+        Optional<User> userOptional = userRepository.findById(id);
+        boolean userExists = userOptional.isPresent();
+
+        if (!userExists) {
+            throw new UserNotFoundException("User not found. Id used: " + id);
+        }
+
+        User user = userOptional.get();
+
+        updateUser(user, userCreateRequestDTO);
+
+        user = userRepository.save(user);
+
+        return UserConverter.convertUserToUserCreateResponseDTO(user);
+    }
+
+    private void updateUser(User user, UserCreateRequestDTO userCreateRequestDTO) {
+        user.setUserName(userCreateRequestDTO.userName());
+        user.setEmail(userCreateRequestDTO.email());
+        // TODO: Add password encrypt before save on database
+        user.setPassword(userCreateRequestDTO.password());
+        user.setFullName(userCreateRequestDTO.fullName());
+        user.setSalary(userCreateRequestDTO.salary());
+    }
+
     public void delete(UUID id) {
         Optional<User> userOptional = userRepository.findById(id);
         boolean userExists = userOptional.isPresent();
