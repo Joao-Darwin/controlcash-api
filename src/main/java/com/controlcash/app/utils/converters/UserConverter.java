@@ -22,6 +22,6 @@ public class UserConverter {
     }
 
     public static UserCreateResponseDTO convertUserToUserCreateResponseDTO(User user) {
-        return new UserCreateResponseDTO(user.getUsername(), user.getEmail(), user.getPassword());
+        return new UserCreateResponseDTO(user.getUsername(), user.getEmail());
     }
 }

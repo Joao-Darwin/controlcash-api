@@ -47,16 +47,13 @@ public class UserConverterTest {
     public void testConvertUserToUserCreateResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateRequestDTO() {
         String expectedUserName = "joodarwin";
         String expectedEmail = "joaodarwin@email.com";
-        String expectedPassword = "123456";
         User user = new User();
         user.setUserName(expectedUserName);
         user.setEmail(expectedEmail);
-        user.setPassword(expectedPassword);
 
         UserCreateResponseDTO userCreateResponseDTO = UserConverter.convertUserToUserCreateResponseDTO(user);
 
         Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
-        Assertions.assertEquals(expectedPassword, userCreateResponseDTO.password());
     }
 }
