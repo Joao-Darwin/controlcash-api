@@ -1,11 +1,14 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.request.UserCreateRequestDTO;
+import com.controlcash.app.dtos.response.UserAllResponseDTO;
 import com.controlcash.app.dtos.response.UserCreateResponseDTO;
 import com.controlcash.app.models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
+import java.util.UUID;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserConverterTest {
@@ -53,6 +56,23 @@ public class UserConverterTest {
 
         UserCreateResponseDTO userCreateResponseDTO = UserConverter.convertUserToUserCreateResponseDTO(user);
 
+        Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
+        Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
+    }
+
+    @Test
+    public void testConvertUserToUserAllResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateRequestDTO() {
+        UUID expectedId = UUID.randomUUID();
+        String expectedUserName = "joodarwin";
+        String expectedEmail = "joaodarwin@email.com";
+        User user = new User();
+        user.setId(expectedId);
+        user.setUserName(expectedUserName);
+        user.setEmail(expectedEmail);
+
+        UserAllResponseDTO userCreateResponseDTO = UserConverter.convertUserToUserAllResponseDTO(user);
+
+        Assertions.assertEquals(expectedId, userCreateResponseDTO.id());
         Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
     }
