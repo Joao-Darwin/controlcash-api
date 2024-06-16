@@ -1,6 +1,7 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.request.UserCreateRequestDTO;
+import com.controlcash.app.dtos.response.UserCreateResponseDTO;
 import com.controlcash.app.models.User;
 
 public class UserConverter {
@@ -18,5 +19,9 @@ public class UserConverter {
         user.setEnabled(false);
 
         return user;
+    }
+
+    public static UserCreateResponseDTO convertUserToUserCreateResponseDTO(User user) {
+        return new UserCreateResponseDTO(user.getUsername(), user.getEmail(), user.getPassword());
     }
 }
