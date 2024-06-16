@@ -149,6 +149,10 @@ public class User implements UserDetails {
         return roles;
     }
 
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
     public List<Goal> getGoals() {
         return goals;
     }
