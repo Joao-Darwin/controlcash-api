@@ -1,5 +1,6 @@
 package com.controlcash.app.utils.converters;
 
+import com.controlcash.app.builder.TransactionBuilder;
 import com.controlcash.app.dtos.request.TransactionCreateRequestDTO;
 import com.controlcash.app.dtos.response.TransactionCreateResponseDTO;
 import com.controlcash.app.models.Category;
@@ -41,7 +42,14 @@ public class TransactionConverterTest {
         double expectedValue = 1600.00;
         int expectedAmountRepeat = 1;
         TransactionType expectedTransactionType = TransactionType.ENTRANCE;
-        Transaction transaction = new Transaction(expectedId, expectedName, expectedDescription, expectedCreatedDate, expectedValue, expectedAmountRepeat, expectedTransactionType);
+        Transaction transaction = new TransactionBuilder(expectedTransactionType)
+                .addId(expectedId)
+                .addName(expectedName)
+                .addDescription(expectedDescription)
+                .addCreatedDate(expectedCreatedDate)
+                .addValue(expectedValue)
+                .addAmountRepeat(expectedAmountRepeat)
+                .build();
 
         TransactionCreateResponseDTO transactionCreateResponseDTO = TransactionConverter.convertTransactionToTransactionCreateResponseDTO(transaction);
 
