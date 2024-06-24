@@ -1,6 +1,7 @@
 package com.controlcash.app.exceptions.handler;
 
 import com.controlcash.app.exceptions.ResponseEntityException;
+import com.controlcash.app.exceptions.TransactionNotFoundException;
 import com.controlcash.app.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,13 @@ public class CustomizeExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ResponseEntityException> handlerUserNotFoundException(Exception exception, WebRequest webRequest) {
+        ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ResponseEntityException> handlerTransactionNotFoundException(Exception exception, WebRequest webRequest) {
         ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
