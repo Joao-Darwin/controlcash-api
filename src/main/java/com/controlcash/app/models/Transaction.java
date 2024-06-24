@@ -41,18 +41,12 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-    public Transaction(UUID id, String name, String description, Date createdDate, Double value, Integer amountRepeat, TransactionType transactionType) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.createdDate = createdDate;
-        this.value = value;
-        this.amountRepeat = amountRepeat;
-        this.transactionType = transactionType.getCode();
-    }
-
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -105,6 +99,10 @@ public class Transaction implements Serializable {
 
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public List<Category> getCategories() {
