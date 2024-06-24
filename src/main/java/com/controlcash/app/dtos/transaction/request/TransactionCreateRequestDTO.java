@@ -1,4 +1,4 @@
-package com.controlcash.app.dtos.request;
+package com.controlcash.app.dtos.transaction.request;
 
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.enums.TransactionType;

@@ -1,9 +1,9 @@
 package com.controlcash.app.services;
 
-import com.controlcash.app.dtos.request.UserCreateRequestDTO;
-import com.controlcash.app.dtos.response.UserAllResponseDTO;
-import com.controlcash.app.dtos.response.UserCompleteResponseDTO;
-import com.controlcash.app.dtos.response.UserCreateResponseDTO;
+import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
+import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
+import com.controlcash.app.dtos.user.response.UserCompleteResponseDTO;
+import com.controlcash.app.dtos.user.response.UserCreateResponseDTO;
 import com.controlcash.app.exceptions.UserNotFoundException;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.UserRepository;

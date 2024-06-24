@@ -1,4 +1,4 @@
-package com.controlcash.app.dtos.response;
+package com.controlcash.app.dtos.user.response;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.controlcash.app.dtos.response;
+package com.controlcash.app.dtos.transaction.response;
 
 import java.util.Date;
 import java.util.UUID;

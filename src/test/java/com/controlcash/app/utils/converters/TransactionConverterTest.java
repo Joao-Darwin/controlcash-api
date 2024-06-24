@@ -1,9 +1,9 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.builder.TransactionBuilder;
-import com.controlcash.app.dtos.request.TransactionCreateRequestDTO;
-import com.controlcash.app.dtos.response.TransactionCompleteResponseDTO;
-import com.controlcash.app.dtos.response.TransactionCreateResponseDTO;
+import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
+import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
+import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.enums.TransactionType;
