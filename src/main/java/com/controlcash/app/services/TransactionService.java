@@ -1,7 +1,10 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.request.TransactionCreateRequestDTO;
+import com.controlcash.app.dtos.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.response.TransactionCreateResponseDTO;
+import com.controlcash.app.exceptions.TransactionNotFoundException;
+import com.controlcash.app.exceptions.UserNotFoundException;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.repositories.TransactionRepository;
 import com.controlcash.app.utils.converters.TransactionConverter;
@@ -11,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -34,5 +39,22 @@ public class TransactionService {
         Page<Transaction> transactions = transactionRepository.findAll(pageable);
 
         return transactions.map(TransactionConverter::convertTransactionToTransactionCreateResponseDTO).toList();
+    }
+
+    public TransactionCompleteResponseDTO findById(UUID id) {
+        Transaction transaction = findTransactionByIdAndVerifyIfExists(id);
+
+        return TransactionConverter.convertTransactionToTransactionCompleteResponseDTO(transaction);
+    }
+
+    private Transaction findTransactionByIdAndVerifyIfExists(UUID id) {
+        Optional<Transaction> transactionOptional = transactionRepository.findById(id);
+        boolean transactionExists = transactionOptional.isPresent();
+
+        if (!transactionExists) {
+            throw new TransactionNotFoundException("Transaction not found. Id used: " + id);
+        }
+
+        return transactionOptional.get();
     }
 }
