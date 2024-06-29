@@ -29,6 +29,14 @@ public class Goal implements Serializable {
 
     public Goal() {}
 
+    public Goal(UUID id, Date dueDate, Double value, User user, Category category) {
+        this.id = id;
+        this.dueDate = dueDate;
+        this.value = value;
+        this.user = user;
+        this.category = category;
+    }
+
     public UUID getId() {
         return this.id;
     }
