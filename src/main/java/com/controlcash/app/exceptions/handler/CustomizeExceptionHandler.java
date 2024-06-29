@@ -1,5 +1,6 @@
 package com.controlcash.app.exceptions.handler;
 
+import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.exceptions.ResponseEntityException;
 import com.controlcash.app.exceptions.TransactionNotFoundException;
 import com.controlcash.app.exceptions.UserNotFoundException;
@@ -32,6 +33,13 @@ public class CustomizeExceptionHandler {
 
     @ExceptionHandler(TransactionNotFoundException.class)
     public ResponseEntity<ResponseEntityException> handlerTransactionNotFoundException(Exception exception, WebRequest webRequest) {
+        ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
+    }
+
+    @ExceptionHandler(GoalNotFoundException.class)
+    public ResponseEntity<ResponseEntityException> handlerGoalNotFoundException(Exception exception, WebRequest webRequest) {
         ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
