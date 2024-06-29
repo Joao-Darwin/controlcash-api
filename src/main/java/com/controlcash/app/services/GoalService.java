@@ -39,11 +39,14 @@ public class GoalService {
         return goals.map(GoalConverter::convertGoalToGoalSimpleResponseDTO);
     }
 
-    // TODO: Implement findById
+    public GoalCompleteResponseDTO findById(UUID id) {
+        Goal goal = findGoalByIdAndVerifyIfExists(id);
+
+        return GoalConverter.convertGoalToGoalCompleteResponseDTO(goal);
+    }
 
     // TODO: Implement update
 
-    // TODO: Implement delete
     public void delete(UUID id) {
         Goal goal = findGoalByIdAndVerifyIfExists(id);
 
