@@ -2,6 +2,7 @@ package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
+import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
@@ -49,5 +50,21 @@ public class GoalConverterTest {
         Assertions.assertEquals(expectedValue, goalCompleteResponseDTO.value());
         Assertions.assertEquals(expectedUser, goalCompleteResponseDTO.user());
         Assertions.assertEquals(expectedCategory, goalCompleteResponseDTO.category());
+    }
+
+    @Test
+    public void testConvertGoalToGoalSimpleResponseDTO_ShouldReturnGoalSimpleResponseDTO() {
+        UUID expectedId = UUID.randomUUID();
+        Date expectedDueDate = Date.from(Instant.now());
+        Double expectedValue = 1250.00;
+        User expectedUser = new User();
+        Category expectedCategory = new Category();
+        Goal goal = new Goal(expectedId, expectedDueDate, expectedValue, expectedUser, expectedCategory);
+
+        GoalSimpleResponseDTO goalSimpleResponseDTO = GoalConverter.convertGoalToGoalSimpleResponseDTO(goal);
+
+        Assertions.assertEquals(expectedId, goalSimpleResponseDTO.id());
+        Assertions.assertEquals(expectedDueDate, goalSimpleResponseDTO.dueDate());
+        Assertions.assertEquals(expectedValue, goalSimpleResponseDTO.value());
     }
 }
