@@ -45,7 +45,18 @@ public class GoalService {
         return GoalConverter.convertGoalToGoalCompleteResponseDTO(goal);
     }
 
-    // TODO: Implement update
+    public GoalCompleteResponseDTO update(GoalCreateRequestDTO goalCreateRequestDTO, UUID id) {
+        Goal goal = findGoalByIdAndVerifyIfExists(id);
+
+        goal.setCategory(goalCreateRequestDTO.category());
+        goal.setDueDate(goalCreateRequestDTO.dueDate());
+        goal.setUser(goalCreateRequestDTO.user());
+        goal.setValue(goalCreateRequestDTO.value());
+
+        goal = goalRepository.save(goal);
+
+        return GoalConverter.convertGoalToGoalCompleteResponseDTO(goal);
+    }
 
     public void delete(UUID id) {
         Goal goal = findGoalByIdAndVerifyIfExists(id);
