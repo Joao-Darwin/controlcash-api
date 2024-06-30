@@ -43,4 +43,12 @@ public class Category implements Serializable {
     public List<Goal> getGoals() {
         return this.goals;
     }
+
+    public List<Transaction> getTransactions() {
+        return this.transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 }
