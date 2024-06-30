@@ -6,7 +6,7 @@ import com.controlcash.app.models.Category;
 
 public class CategoryConverter {
 
-    public Category convertCategoryRequestDTOToCategory(CategoryRequestDTO categoryRequestDTO) {
+    public static Category convertCategoryRequestDTOToCategory(CategoryRequestDTO categoryRequestDTO) {
         Category category = new Category();
 
         category.setName(categoryRequestDTO.name());
@@ -16,7 +16,7 @@ public class CategoryConverter {
         return category;
     }
 
-    public CategoryResponseDTO convertCategoryToCategoryResponseDTO(Category category) {
+    public static CategoryResponseDTO convertCategoryToCategoryResponseDTO(Category category) {
         return new CategoryResponseDTO(category.getId(), category.getName());
     }
 }
