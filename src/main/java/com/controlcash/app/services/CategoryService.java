@@ -62,4 +62,10 @@ public class CategoryService {
 
         return CategoryConverter.convertCategoryToCategoryResponseDTO(category);
     }
+
+    public void delete(UUID id) {
+        Category category = findCategoryByIdAndVerifyIfExists(id);
+
+        categoryRepository.delete(category);
+    }
 }
