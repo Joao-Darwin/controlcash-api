@@ -54,4 +54,12 @@ public class CategoryService {
 
         return categoryOptional.get();
     }
+
+    public CategoryResponseDTO update(CategoryRequestDTO categoryRequestDTO, UUID id) {
+        Category category = findCategoryByIdAndVerifyIfExists(id);
+
+        category.setName(categoryRequestDTO.name());
+
+        return CategoryConverter.convertCategoryToCategoryResponseDTO(category);
+    }
 }
