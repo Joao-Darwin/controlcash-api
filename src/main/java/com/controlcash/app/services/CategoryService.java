@@ -6,7 +6,11 @@ import com.controlcash.app.models.Category;
 import com.controlcash.app.repositories.CategoryRepository;
 import com.controlcash.app.utils.converters.CategoryConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CategoryService {
@@ -24,5 +28,11 @@ public class CategoryService {
         category = categoryRepository.save(category);
 
         return CategoryConverter.convertCategoryToCategoryResponseDTO(category);
+    }
+
+    public Page<CategoryResponseDTO> findAll(Pageable pageable) {
+        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+
+        return categoryPage.map(CategoryConverter::convertCategoryToCategoryResponseDTO);
     }
 }
