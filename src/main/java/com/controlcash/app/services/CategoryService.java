@@ -38,6 +38,12 @@ public class CategoryService {
         return categoryPage.map(CategoryConverter::convertCategoryToCategoryResponseDTO);
     }
 
+    public CategoryResponseDTO findById(UUID id) {
+        Category category = findCategoryByIdAndVerifyIfExists(id);
+
+        return CategoryConverter.convertCategoryToCategoryResponseDTO(category);
+    }
+
     private Category findCategoryByIdAndVerifyIfExists(UUID id) {
         Optional<Category> categoryOptional = categoryRepository.findById(id);
         boolean categoryExists = categoryOptional.isPresent();
