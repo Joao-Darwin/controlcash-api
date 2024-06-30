@@ -1,9 +1,6 @@
 package com.controlcash.app.exceptions.handler;
 
-import com.controlcash.app.exceptions.GoalNotFoundException;
-import com.controlcash.app.exceptions.ResponseEntityException;
-import com.controlcash.app.exceptions.TransactionNotFoundException;
-import com.controlcash.app.exceptions.UserNotFoundException;
+import com.controlcash.app.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,6 +37,13 @@ public class CustomizeExceptionHandler {
 
     @ExceptionHandler(GoalNotFoundException.class)
     public ResponseEntity<ResponseEntityException> handlerGoalNotFoundException(Exception exception, WebRequest webRequest) {
+        ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ResponseEntityException> handlerCategoryNotFoundException(Exception exception, WebRequest webRequest) {
         ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);

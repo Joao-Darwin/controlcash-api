@@ -2,7 +2,10 @@ package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.category.request.CategoryRequestDTO;
 import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
+import com.controlcash.app.exceptions.CategoryNotFoundException;
+import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.models.Category;
+import com.controlcash.app.models.Goal;
 import com.controlcash.app.repositories.CategoryRepository;
 import com.controlcash.app.utils.converters.CategoryConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CategoryService {
@@ -34,5 +39,16 @@ public class CategoryService {
         Page<Category> categoryPage = categoryRepository.findAll(pageable);
 
         return categoryPage.map(CategoryConverter::convertCategoryToCategoryResponseDTO);
+    }
+
+    private Category findCategoryByIdAndVerifyIfExists(UUID id) {
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        boolean categoryExists = categoryOptional.isPresent();
+
+        if (!categoryExists) {
+            throw new CategoryNotFoundException("Category not found. Id used: " + id);
+        }
+
+        return categoryOptional.get();
     }
 }
