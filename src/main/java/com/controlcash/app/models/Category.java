@@ -28,6 +28,13 @@ public class Category implements Serializable {
     public Category() {
     }
 
+    public Category(UUID id, String name, List<Goal> goals, List<Transaction> transactions) {
+        this.id = id;
+        this.name = name;
+        this.goals = goals;
+        this.transactions = transactions;
+    }
+
     public UUID getId() {
         return id;
     }
