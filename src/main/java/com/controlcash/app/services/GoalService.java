@@ -45,6 +45,17 @@ public class GoalService {
         return GoalConverter.convertGoalToGoalCompleteResponseDTO(goal);
     }
 
+    private Goal findGoalByIdAndVerifyIfExists(UUID id) {
+        Optional<Goal> goalOptional = goalRepository.findById(id);
+        boolean goalExists = goalOptional.isPresent();
+
+        if (!goalExists) {
+            throw new GoalNotFoundException("Goal not found. Id used: " + id);
+        }
+
+        return goalOptional.get();
+    }
+
     public GoalCompleteResponseDTO update(GoalCreateRequestDTO goalCreateRequestDTO, UUID id) {
         Goal goal = findGoalByIdAndVerifyIfExists(id);
 
@@ -62,16 +73,5 @@ public class GoalService {
         Goal goal = findGoalByIdAndVerifyIfExists(id);
 
         goalRepository.delete(goal);
-    }
-
-    private Goal findGoalByIdAndVerifyIfExists(UUID id) {
-        Optional<Goal> goalOptional = goalRepository.findById(id);
-        boolean goalExists = goalOptional.isPresent();
-
-        if (!goalExists) {
-            throw new GoalNotFoundException("Goal not found. Id used: " + id);
-        }
-
-        return goalOptional.get();
     }
 }
