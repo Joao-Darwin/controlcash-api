@@ -1,6 +1,7 @@
 package com.controlcash.app.models;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class Goal implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date dueDate;
     @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
     private Double value;
@@ -28,6 +30,14 @@ public class Goal implements Serializable {
     private Category category;
 
     public Goal() {}
+
+    public Goal(UUID id, Date dueDate, Double value, User user, Category category) {
+        this.id = id;
+        this.dueDate = dueDate;
+        this.value = value;
+        this.user = user;
+        this.category = category;
+    }
 
     public UUID getId() {
         return this.id;

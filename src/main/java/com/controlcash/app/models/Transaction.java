@@ -2,6 +2,7 @@ package com.controlcash.app.models;
 
 import com.controlcash.app.models.enums.TransactionType;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Transaction implements Serializable {
     private String name;
     private String description;
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date createdDate;
     @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
     private Double value;
@@ -41,18 +43,12 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-    public Transaction(UUID id, String name, String description, Date createdDate, Double value, Integer amountRepeat, TransactionType transactionType) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.createdDate = createdDate;
-        this.value = value;
-        this.amountRepeat = amountRepeat;
-        this.transactionType = transactionType.getCode();
-    }
-
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -105,5 +101,17 @@ public class Transaction implements Serializable {
 
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }
