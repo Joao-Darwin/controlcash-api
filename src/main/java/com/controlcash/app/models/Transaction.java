@@ -2,6 +2,7 @@ package com.controlcash.app.models;
 
 import com.controlcash.app.models.enums.TransactionType;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Transaction implements Serializable {
     private String name;
     private String description;
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date createdDate;
     @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
     private Double value;
