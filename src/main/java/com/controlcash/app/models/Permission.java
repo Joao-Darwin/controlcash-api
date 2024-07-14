@@ -31,6 +31,10 @@ public class Permission implements GrantedAuthority, Serializable {
         return this.id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     @Override
     public String getAuthority() {
         return this.description;
@@ -42,5 +46,9 @@ public class Permission implements GrantedAuthority, Serializable {
 
     public List<User> getUsers() {
         return this.users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

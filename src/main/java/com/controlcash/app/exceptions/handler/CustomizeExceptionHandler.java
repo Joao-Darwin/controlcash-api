@@ -48,4 +48,11 @@ public class CustomizeExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
     }
+
+    @ExceptionHandler(PermissionNotFoundException.class)
+    public ResponseEntity<ResponseEntityException> handlerPermissionNotFoundException(Exception exception, WebRequest webRequest) {
+        ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), exception.getMessage(), webRequest.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseEntityException);
+    }
 }
