@@ -8,7 +8,7 @@ public class PermissionConverter {
     public static Permission convertPermissionCreateRequestDTOToPermission(PermissionCreateRequestDTO permissionCreateRequestDTO) {
         Permission permission = new Permission();
 
-        permission.setDescription(permission.getAuthority());
+        permission.setDescription(permissionCreateRequestDTO.description());
         permission.setUsers(null);
 
         return permission;
