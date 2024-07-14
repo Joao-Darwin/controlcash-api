@@ -1,6 +1,7 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
 import com.controlcash.app.models.Permission;
@@ -26,5 +27,9 @@ public class PermissionConverter {
                 .toList();
 
         return new PermissionResponseDTO(permission.getId(), permission.getAuthority(), userAllResponseDTOList);
+    }
+
+    public static AllPermissionResponseDTO convertPermissionToAllPermissionResponseDTO(Permission permission) {
+        return new AllPermissionResponseDTO(permission.getId(), permission.getAuthority());
     }
 }
