@@ -56,4 +56,9 @@ public class PermissionService {
         return permissionOptional.get();
     }
 
+    public void delete(UUID id) {
+        Permission permission = findPermissionByIdAndVerifyIfExists(id);
+
+        permissionRepository.delete(permission);
+    }
 }
