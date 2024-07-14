@@ -4,9 +4,7 @@ import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.exceptions.PermissionNotFoundException;
-import com.controlcash.app.exceptions.UserNotFoundException;
 import com.controlcash.app.models.Permission;
-import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.PermissionRepository;
 import com.controlcash.app.utils.converters.PermissionConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
