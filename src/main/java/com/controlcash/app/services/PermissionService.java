@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.request.PermissionUpdateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.exceptions.PermissionNotFoundException;
@@ -54,6 +55,21 @@ public class PermissionService {
         }
 
         return permissionOptional.get();
+    }
+
+    public PermissionResponseDTO update(PermissionUpdateRequestDTO permissionUpdateRequestDTO, UUID id) {
+        Permission permissionToUpdate = findPermissionByIdAndVerifyIfExists(id);
+
+        updatePermission(permissionUpdateRequestDTO, permissionToUpdate);
+
+        permissionToUpdate = permissionRepository.save(permissionToUpdate);
+
+        return PermissionConverter.convertPermissionToPermissionResponseDTO(permissionToUpdate);
+    }
+
+    private void updatePermission(PermissionUpdateRequestDTO permissionUpdateRequestDTO, Permission permissionToUpdate) {
+        permissionToUpdate.setDescription(permissionUpdateRequestDTO.description());
+        permissionToUpdate.setUsers(permissionUpdateRequestDTO.users());
     }
 
     public void delete(UUID id) {
