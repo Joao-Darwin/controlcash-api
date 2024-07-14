@@ -1,6 +1,7 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
@@ -42,5 +43,19 @@ public class PermissionConverterTest {
         Assertions.assertEquals(expectedId, permissionResponseDTO.id());
         Assertions.assertEquals(expectedDescription, permissionResponseDTO.description());
         Assertions.assertEquals(expectedId, permissionResponseDTO.id());
+    }
+
+    @Test
+    void testConvertPermissionToAllPermissionResponseDTO_ShouldReturnAPermissionResponseDTO() {
+        UUID expectedId = UUID.randomUUID();
+        String expectedDescription = "ADMIN";
+        Permission permission = Mockito.mock(Permission.class);
+        Mockito.when(permission.getId()).thenReturn(expectedId);
+        Mockito.when(permission.getAuthority()).thenReturn(expectedDescription);
+
+        AllPermissionResponseDTO allPermissionResponseDTO = PermissionConverter.convertPermissionToAllPermissionResponseDTO(permission);
+
+        Assertions.assertEquals(expectedId, allPermissionResponseDTO.id());
+        Assertions.assertEquals(expectedDescription, allPermissionResponseDTO.description());
     }
 }
