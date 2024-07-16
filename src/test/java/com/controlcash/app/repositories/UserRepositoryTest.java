@@ -1,6 +1,8 @@
 package com.controlcash.app.repositories;
 
 import com.controlcash.app.models.User;
+import jakarta.persistence.EntityManager;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,9 @@ public class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private User user;
 
@@ -60,6 +65,39 @@ public class UserRepositoryTest {
         Assertions.assertFalse(actualUser.isAccountNonExpired());
         Assertions.assertFalse(actualUser.isAccountNonLocked());
         Assertions.assertFalse(actualUser.isCredentialsNonExpired());
+    }
+
+    @Test
+    void testSave_WhenViolateUsernameUniqueConstraint_ShouldThrowsAnException() {
+        userRepository.save(user);
+        User anotherUser = new User();
+        anotherUser.setUserName("user123");
+        anotherUser.setEmail("anotheruser@gmail.com");
+        anotherUser.setFullName("Another User");
+        anotherUser.setSalary(1500.00);
+        anotherUser.setPassword("anotherpassword");
+        userRepository.save(anotherUser);
+
+        Assertions.assertThrows(ConstraintViolationException.class, () -> {
+            userRepository.save(anotherUser);
+            entityManager.flush();
+        });
+    }
+
+    @Test
+    void testSave_WhenViolateEmailUniqueConstraint_ShouldThrowsAnException() {
+        userRepository.save(user);
+        User anotherUser = new User();
+        anotherUser.setUserName("anotherUser");
+        anotherUser.setEmail("user123@gmail.com");
+        anotherUser.setFullName("Another User");
+        anotherUser.setSalary(1500.00);
+        anotherUser.setPassword("anotherpassword");
+
+        Assertions.assertThrows(ConstraintViolationException.class, () -> {
+            userRepository.save(anotherUser);
+            entityManager.flush();
+        });
     }
 
     @Test
