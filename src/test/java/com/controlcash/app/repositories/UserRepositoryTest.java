@@ -82,7 +82,7 @@ public class UserRepositoryTest {
         anotherUser.setEmail("anotheruser@gmail.com");
         anotherUser.setFullName("Another User");
         anotherUser.setSalary(1500.00);
-        anotherUser.setPassword("anotherpassword");
+        anotherUser.setPassword("another password");
         userRepository.save(anotherUser);
 
         Assertions.assertThrows(ConstraintViolationException.class, () -> {
@@ -99,7 +99,7 @@ public class UserRepositoryTest {
         anotherUser.setEmail("user123@gmail.com");
         anotherUser.setFullName("Another User");
         anotherUser.setSalary(1500.00);
-        anotherUser.setPassword("anotherpassword");
+        anotherUser.setPassword("another password");
 
         Assertions.assertThrows(ConstraintViolationException.class, () -> {
             userRepository.save(anotherUser);
@@ -115,7 +115,7 @@ public class UserRepositoryTest {
         anotherUser.setEmail("user02@gmail.com");
         anotherUser.setFullName("Another User");
         anotherUser.setSalary(1500.00);
-        anotherUser.setPassword("anotherpassword");
+        anotherUser.setPassword("another password");
         userRepository.save(anotherUser);
 
         List<User> userList = userRepository.findAll();
