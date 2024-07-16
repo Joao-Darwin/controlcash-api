@@ -47,6 +47,22 @@ public class UserRepositoryTest {
     }
 
     @Test
+    void testSave_GivenUserWithoutAllAttributes_ShouldSaveAndReturnAUser() {
+        User actualUser = userRepository.save(user);
+
+        Assertions.assertNotNull(actualUser.getId());
+        Assertions.assertEquals(user.getUsername(), actualUser.getUsername());
+        Assertions.assertEquals(user.getPassword(), actualUser.getPassword());
+        Assertions.assertEquals(user.getSalary(), actualUser.getSalary());
+        Assertions.assertEquals(user.getEmail(), actualUser.getEmail());
+        Assertions.assertEquals(user.getFullName(), actualUser.getFullName());
+        Assertions.assertFalse(actualUser.isEnabled());
+        Assertions.assertFalse(actualUser.isAccountNonExpired());
+        Assertions.assertFalse(actualUser.isAccountNonLocked());
+        Assertions.assertFalse(actualUser.isCredentialsNonExpired());
+    }
+
+    @Test
     void testFindByUsername_GivenUsername_ShouldReturnAUser() {
         userRepository.save(user);
 
