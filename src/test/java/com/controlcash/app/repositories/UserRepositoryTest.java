@@ -5,7 +5,9 @@ import jakarta.persistence.EntityManager;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @DataJpaTest
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class UserRepositoryTest {
 
     @Autowired
@@ -162,5 +165,15 @@ public class UserRepositoryTest {
         Assertions.assertFalse(actualUser.isAccountNonExpired());
         Assertions.assertFalse(actualUser.isAccountNonLocked());
         Assertions.assertFalse(actualUser.isCredentialsNonExpired());
+    }
+
+    @Test
+    void testUpdateUser_ShouldReturnTheUpdatedUser() {
+        user = userRepository.save(user);
+        user.setFullName("Another full name");
+
+        User actualUser = userRepository.save(user);
+
+        Assertions.assertEquals(user.getFullName(), actualUser.getFullName());
     }
 }
