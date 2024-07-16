@@ -26,7 +26,7 @@ public class Transaction implements Serializable {
     @Column(nullable = false)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date createdDate;
-    @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
+    @Column(name = "transaction_value", nullable = false, columnDefinition = "FLOAT CHECK (transaction_value < 0)")
     private Double value;
     @Column(nullable = false, columnDefinition = "INT CHECK (amount_repeat <= 0)")
     private Integer amountRepeat;

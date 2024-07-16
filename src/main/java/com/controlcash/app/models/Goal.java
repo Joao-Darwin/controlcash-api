@@ -20,7 +20,7 @@ public class Goal implements Serializable {
     @Column(nullable = false)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date dueDate;
-    @Column(nullable = false, columnDefinition = "FLOAT CHECK (value < 0)")
+    @Column(name = "goal_value", nullable = false, columnDefinition = "FLOAT CHECK (goal_value < 0)")
     private Double value;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
