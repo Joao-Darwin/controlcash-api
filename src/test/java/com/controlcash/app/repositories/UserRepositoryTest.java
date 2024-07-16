@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
 public class UserRepositoryTest {
@@ -117,6 +119,31 @@ public class UserRepositoryTest {
 
         Assertions.assertNotNull(userList);
         Assertions.assertEquals(2, userList.size());
+    }
+
+    @Test
+    void testFindById_GivenValidId_ShouldReturnUser() {
+        User expectedUser = userRepository.save(user);
+
+        Optional<User> userOptional = userRepository.findById(expectedUser.getId());
+
+        Assertions.assertTrue(userOptional.isPresent());
+        User actualUser = userOptional.get();
+        Assertions.assertEquals(expectedUser.getId(), actualUser.getId());
+        Assertions.assertEquals(expectedUser.getUsername(), actualUser.getUsername());
+        Assertions.assertEquals(expectedUser.getPassword(), actualUser.getPassword());
+        Assertions.assertEquals(expectedUser.getSalary(), actualUser.getSalary());
+        Assertions.assertEquals(expectedUser.getEmail(), actualUser.getEmail());
+        Assertions.assertEquals(expectedUser.getFullName(), actualUser.getFullName());
+    }
+
+    @Test
+    void testFindById_GivenNotValidId_ShouldReturnAnOptionalEmpty() {
+        UUID expectedId = UUID.randomUUID();
+
+        Optional<User> userOptional = userRepository.findById(expectedId);
+
+        Assertions.assertTrue(userOptional.isEmpty());
     }
 
     @Test
