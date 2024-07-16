@@ -68,7 +68,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void testSave_WhenViolateUsernameUniqueConstraint_ShouldThrowsAnException() {
+    void testSave_WhenViolateUsernameUniqueConstraint_ShouldThrowsAConstraintViolationException() {
         userRepository.save(user);
         User anotherUser = new User();
         anotherUser.setUserName("user123");
@@ -85,7 +85,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void testSave_WhenViolateEmailUniqueConstraint_ShouldThrowsAnException() {
+    void testSave_WhenViolateEmailUniqueConstraint_ShouldThrowsAConstraintViolationException() {
         userRepository.save(user);
         User anotherUser = new User();
         anotherUser.setUserName("anotherUser");
