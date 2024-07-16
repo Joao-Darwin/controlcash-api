@@ -176,4 +176,14 @@ public class UserRepositoryTest {
 
         Assertions.assertEquals(user.getFullName(), actualUser.getFullName());
     }
+
+    @Test
+    void testDeleteById_GivenUserId_ShouldRemoveUser(){
+        user = userRepository.save(user);
+
+        userRepository.deleteById(user.getId());
+        Optional<User> optionalMovie = userRepository.findById(user.getId());
+
+        Assertions.assertTrue(optionalMovie.isEmpty());
+    }
 }
