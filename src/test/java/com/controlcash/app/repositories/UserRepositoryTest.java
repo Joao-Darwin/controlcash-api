@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 @DataJpaTest
 public class UserRepositoryTest {
 
@@ -98,6 +100,23 @@ public class UserRepositoryTest {
             userRepository.save(anotherUser);
             entityManager.flush();
         });
+    }
+
+    @Test
+    void testFindAll_ShouldReturnUserList() {
+        userRepository.save(user);
+        User anotherUser = new User();
+        anotherUser.setUserName("user02");
+        anotherUser.setEmail("user02@gmail.com");
+        anotherUser.setFullName("Another User");
+        anotherUser.setSalary(1500.00);
+        anotherUser.setPassword("anotherpassword");
+        userRepository.save(anotherUser);
+
+        List<User> userList = userRepository.findAll();
+
+        Assertions.assertNotNull(userList);
+        Assertions.assertEquals(2, userList.size());
     }
 
     @Test
