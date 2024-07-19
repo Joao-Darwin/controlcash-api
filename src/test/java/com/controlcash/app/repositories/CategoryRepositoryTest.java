@@ -74,4 +74,15 @@ public class CategoryRepositoryTest {
 
         Assertions.assertTrue(optionalCategory.isEmpty());
     }
+
+    @Test
+    void testUpdateCategory_ShouldUpdateTheCategory() {
+        category = categoryRepository.save(category);
+        String expectedNewCategoryName = "Home";
+        category.setName(expectedNewCategoryName);
+
+        Category actualCategory = categoryRepository.save(category);
+
+        Assertions.assertEquals(expectedNewCategoryName, actualCategory.getName());
+    }
 }
