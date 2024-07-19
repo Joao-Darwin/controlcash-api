@@ -85,4 +85,15 @@ public class CategoryRepositoryTest {
 
         Assertions.assertEquals(expectedNewCategoryName, actualCategory.getName());
     }
+
+    @Test
+    void testDeleteById_GivenAnId_ShouldRemoveCategory() {
+        category = categoryRepository.save(category);
+        UUID uuid = category.getId();
+
+        categoryRepository.deleteById(uuid);
+        Optional<Category> optionalCategory = categoryRepository.findById(uuid);
+
+        Assertions.assertTrue(optionalCategory.isEmpty());
+    }
 }
