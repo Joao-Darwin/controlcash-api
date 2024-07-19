@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -50,5 +52,17 @@ public class CategoryRepositoryTest {
 
         Assertions.assertNotNull(actualCategoryList);
         Assertions.assertEquals(2, actualCategoryList.size());
+    }
+
+    @Test
+    void testFindById_GivenAnIdValid_ShouldReturnACategory() {
+        category = categoryRepository.save(category);
+        UUID expectedId = category.getId();
+
+        Optional<Category> optionalCategory = categoryRepository.findById(expectedId);
+
+        Assertions.assertTrue(optionalCategory.isPresent());
+        Category actualCategory = optionalCategory.get();
+        Assertions.assertEquals(category.getName(), actualCategory.getName());
     }
 }
