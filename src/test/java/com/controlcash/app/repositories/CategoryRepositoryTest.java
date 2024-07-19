@@ -65,4 +65,13 @@ public class CategoryRepositoryTest {
         Category actualCategory = optionalCategory.get();
         Assertions.assertEquals(category.getName(), actualCategory.getName());
     }
+
+    @Test
+    void testFindById_GivenAnIdNotValid_ShouldReturnAOptionalEmpty() {
+        UUID uuid = UUID.randomUUID();
+
+        Optional<Category> optionalCategory = categoryRepository.findById(uuid);
+
+        Assertions.assertTrue(optionalCategory.isEmpty());
+    }
 }
