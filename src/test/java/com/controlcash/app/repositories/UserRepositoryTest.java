@@ -182,8 +182,8 @@ public class UserRepositoryTest {
         user = userRepository.save(user);
 
         userRepository.deleteById(user.getId());
-        Optional<User> optionalMovie = userRepository.findById(user.getId());
+        Optional<User> optionalUser = userRepository.findById(user.getId());
 
-        Assertions.assertTrue(optionalMovie.isEmpty());
+        Assertions.assertTrue(optionalUser.isEmpty());
     }
 }
