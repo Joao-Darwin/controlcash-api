@@ -4,6 +4,7 @@ import com.controlcash.app.models.Goal;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,14 +27,7 @@ public class GoalRepositoryTest {
     }
 
     @Test
-    void testSave_GivenAGoalWithoutUserAndCategory_ShouldSaveAndReturnAGoal() {
-        Goal actualGoal = goalRepository.save(goal);
-
-        Assertions.assertNotNull(actualGoal);
-        Assertions.assertNotNull(actualGoal.getId());
-        Assertions.assertEquals(goal.getValue(), actualGoal.getValue());
-        Assertions.assertEquals(goal.getDueDate(), actualGoal.getDueDate());
-        Assertions.assertNull(actualGoal.getUser());
-        Assertions.assertNull(actualGoal.getCategory());
+    void testSave_GivenAGoalWithoutUserAndCategory_ShouldThrowsADataIntegrityViolationException() {
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> goalRepository.save(goal));
     }
 }
