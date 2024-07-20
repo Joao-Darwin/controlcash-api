@@ -30,4 +30,11 @@ public class GoalRepositoryTest {
     void testSave_GivenAGoalWithoutUserAndCategory_ShouldThrowsADataIntegrityViolationException() {
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> goalRepository.save(goal));
     }
+
+    @Test
+    void testSave_GivenAGoalWithoutDueDate_ShouldThrowsADataIntegrityViolationException() {
+        goal.setDueDate(null);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> goalRepository.save(goal));
+    }
 }
