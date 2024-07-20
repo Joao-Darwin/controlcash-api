@@ -1,5 +1,6 @@
 package com.controlcash.app.repositories;
 
+import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
 import jakarta.persistence.EntityManager;
@@ -16,6 +17,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -109,5 +112,28 @@ public class GoalRepositoryTest {
 
         Assertions.assertNotNull(goals);
         Assertions.assertEquals(2, goals.size());
+    }
+
+    @Test
+    void testFindById_GivenAnIdValid_ShouldReturnAGoal() {
+        goal.setUser(user);
+        goal = goalRepository.save(goal);
+        UUID expectedId = goal.getId();
+
+        Optional<Goal> optionalGoal = goalRepository.findById(expectedId);
+
+        Assertions.assertTrue(optionalGoal.isPresent());
+        Goal actualGoal = optionalGoal.get();
+        Assertions.assertEquals(goal.getValue(), actualGoal.getValue());
+        Assertions.assertEquals(goal.getDueDate(), actualGoal.getDueDate());
+    }
+
+    @Test
+    void testFindById_GivenAnIdNotValid_ShouldReturnAOptionalEmpty() {
+        UUID uuid = UUID.randomUUID();
+
+        Optional<Goal> optionalGoal = goalRepository.findById(uuid);
+
+        Assertions.assertTrue(optionalGoal.isEmpty());
     }
 }
