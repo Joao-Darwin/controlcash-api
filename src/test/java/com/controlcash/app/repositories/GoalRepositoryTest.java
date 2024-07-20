@@ -136,4 +136,16 @@ public class GoalRepositoryTest {
 
         Assertions.assertTrue(optionalGoal.isEmpty());
     }
+
+    @Test
+    void testUpdateGoal_ShouldUpdateTheGoal() {
+        Double expectedValue = 5000.00;
+        goal.setUser(user);
+        goal = goalRepository.save(goal);
+
+        goal.setValue(expectedValue);
+        Goal actualGoal = goalRepository.save(goal);
+
+        Assertions.assertEquals(expectedValue, actualGoal.getValue());
+    }
 }
