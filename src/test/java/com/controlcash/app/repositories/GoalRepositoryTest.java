@@ -2,6 +2,8 @@ package com.controlcash.app.repositories;
 
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
+import jakarta.persistence.EntityManager;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -21,6 +23,9 @@ public class GoalRepositoryTest {
 
     @Autowired
     private GoalRepository goalRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     SimpleDateFormat dateFormat;
 
@@ -66,6 +71,28 @@ public class GoalRepositoryTest {
         goal.setDueDate(null);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> goalRepository.save(goal));
+    }
+
+    @Test
+    void testSave_GivenAGoalWithValueSmallerThanZero_ShouldThrowsAConstraintViolationException() {
+        goal.setUser(user);
+        goal.setValue(-250.00);
+
+        Assertions.assertThrows(ConstraintViolationException.class, () -> {
+            goalRepository.save(goal);
+            entityManager.flush();
+        });
+    }
+
+    @Test
+    void testSave_GivenAGoalWithValueEqualsZero_ShouldThrowsAConstraintViolationException() {
+        goal.setUser(user);
+        goal.setValue(0.00);
+
+        Assertions.assertThrows(ConstraintViolationException.class, () -> {
+            goalRepository.save(goal);
+            entityManager.flush();
+        });
     }
 
     @Test
