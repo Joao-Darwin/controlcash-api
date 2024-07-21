@@ -148,4 +148,16 @@ public class GoalRepositoryTest {
 
         Assertions.assertEquals(expectedValue, actualGoal.getValue());
     }
+
+    @Test
+    void testDeleteById_ShouldDeleteGoal() {
+        goal.setUser(user);
+        goal = goalRepository.save(goal);
+        UUID id = goal.getId();
+
+        goalRepository.deleteById(id);
+        Optional<Goal> optionalGoal = goalRepository.findById(id);
+
+        Assertions.assertTrue(optionalGoal.isEmpty());
+    }
 }
