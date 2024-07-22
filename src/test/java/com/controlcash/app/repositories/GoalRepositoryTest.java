@@ -1,6 +1,5 @@
 package com.controlcash.app.repositories;
 
-import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
 import jakarta.persistence.EntityManager;
