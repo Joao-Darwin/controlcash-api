@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -31,5 +32,12 @@ public class PermissionRepositoryTest {
         Assertions.assertNotNull(actualPermission);
         Assertions.assertNotNull(actualPermission.getId());
         Assertions.assertEquals(permission.getAuthority(), actualPermission.getAuthority());
+    }
+
+    @Test
+    void testSave_WhenDescriptionIsNull_ShouldThrowsAnException() {
+        permission.setDescription(null);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> permissionRepository.save(permission));
     }
 }
