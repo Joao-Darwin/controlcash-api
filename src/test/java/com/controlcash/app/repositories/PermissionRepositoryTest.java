@@ -1,6 +1,8 @@
 package com.controlcash.app.repositories;
 
 import com.controlcash.app.models.Permission;
+import jakarta.persistence.EntityManager;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -16,6 +18,9 @@ public class PermissionRepositoryTest {
 
     @Autowired
     private PermissionRepository permissionRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private Permission permission;
 
@@ -35,9 +40,21 @@ public class PermissionRepositoryTest {
     }
 
     @Test
-    void testSave_WhenDescriptionIsNull_ShouldThrowsAnException() {
+    void testSave_WhenDescriptionIsNull_ShouldThrowsADataIntegrityViolationException() {
         permission.setDescription(null);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> permissionRepository.save(permission));
+    }
+
+    @Test
+    void testSave_WhenDescriptionAlreadyExists_ShouldThrowsAConstraintViolationException() {
+        permissionRepository.save(permission);
+        permission = new Permission();
+        permission.setDescription("Admin");
+
+        Assertions.assertThrows(ConstraintViolationException.class, () -> {
+            permissionRepository.save(permission);
+            entityManager.flush();
+        });
     }
 }

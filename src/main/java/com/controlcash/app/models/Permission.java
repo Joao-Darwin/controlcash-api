@@ -25,7 +25,7 @@ public class Permission implements GrantedAuthority, Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String description;
 
     @ManyToMany(mappedBy = "permissions")
