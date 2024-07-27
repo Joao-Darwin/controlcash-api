@@ -121,10 +121,23 @@ public class PermissionRepositoryTest {
         permission.setDescription("User");
 
         permissionRepository.save(permission);
-        Permission actualPermission = permissionRepository.findById(permission.getId()).get();
+        Optional<Permission> optionalPermission = permissionRepository.findById(permission.getId());
+        Assertions.assertTrue(optionalPermission.isPresent());
+        Permission actualPermission = optionalPermission.get();
 
         Assertions.assertNotNull(actualPermission);
         Assertions.assertEquals(permission.getId(), actualPermission.getId());
         Assertions.assertEquals(expectedNewDescription, actualPermission.getAuthority());
+    }
+
+    @Test
+    void testDeleteById_GivenAnId_ShouldRemovePermission() {
+        permission = permissionRepository.save(permission);
+        UUID uuid = permission.getId();
+
+        permissionRepository.deleteById(uuid);
+        Optional<Permission> optionalPermission = permissionRepository.findById(uuid);
+
+        Assertions.assertTrue(optionalPermission.isEmpty());
     }
 }
