@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -89,5 +91,26 @@ public class PermissionRepositoryTest {
 
         Assertions.assertNotNull(permissions);
         Assertions.assertTrue(permissions.hasContent());
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAOptionalWithPermission() {
+        permission = permissionRepository.save(permission);
+        UUID expectedId = permission.getId();
+
+        Optional<Permission> optionalPermission = permissionRepository.findById(expectedId);
+
+        Assertions.assertTrue(optionalPermission.isPresent());
+        Permission actualPermission = optionalPermission.get();
+        Assertions.assertEquals(expectedId, actualPermission.getId());
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldReturnAEmptyOptionalPermission() {
+        UUID id = UUID.randomUUID();
+
+        Optional<Permission> optionalPermission = permissionRepository.findById(id);
+
+        Assertions.assertTrue(optionalPermission.isEmpty());
     }
 }
