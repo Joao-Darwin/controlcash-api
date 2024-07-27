@@ -33,7 +33,7 @@ public class Transaction implements Serializable {
     @Column(nullable = false)
     private Integer transactionType;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @ManyToMany(fetch = FetchType.EAGER)
