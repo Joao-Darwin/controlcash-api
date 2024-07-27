@@ -11,6 +11,12 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -56,5 +62,32 @@ public class PermissionRepositoryTest {
             permissionRepository.save(permission);
             entityManager.flush();
         });
+    }
+
+    @Test
+    void testFindAll_ShouldReturnAPermissionList() {
+        permissionRepository.save(permission);
+        permission = new Permission();
+        permission.setDescription("User");
+        permissionRepository.save(permission);
+
+        List<Permission> permissions = permissionRepository.findAll();
+
+        Assertions.assertNotNull(permissions);
+        Assertions.assertEquals(2, permissions.size());
+    }
+
+    @Test
+    void testFindAll_GivenAPageable_ShouldReturnAPermissionPage() {
+        permissionRepository.save(permission);
+        permission = new Permission();
+        permission.setDescription("User");
+        permissionRepository.save(permission);
+        Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "description"));
+
+        Page<Permission> permissions = permissionRepository.findAll(pageable);
+
+        Assertions.assertNotNull(permissions);
+        Assertions.assertTrue(permissions.hasContent());
     }
 }
