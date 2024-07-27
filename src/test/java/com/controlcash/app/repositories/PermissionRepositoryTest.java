@@ -113,4 +113,18 @@ public class PermissionRepositoryTest {
 
         Assertions.assertTrue(optionalPermission.isEmpty());
     }
+
+    @Test
+    void testUpdate_ShouldUpdatePermission() {
+        String expectedNewDescription = "User";
+        permission = permissionRepository.save(permission);
+        permission.setDescription("User");
+
+        permissionRepository.save(permission);
+        Permission actualPermission = permissionRepository.findById(permission.getId()).get();
+
+        Assertions.assertNotNull(actualPermission);
+        Assertions.assertEquals(permission.getId(), actualPermission.getId());
+        Assertions.assertEquals(expectedNewDescription, actualPermission.getAuthority());
+    }
 }
