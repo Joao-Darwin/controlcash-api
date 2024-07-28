@@ -3,6 +3,7 @@ package com.controlcash.app.repositories;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
+import com.controlcash.app.utils.dates.DateFormatUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -21,13 +21,12 @@ public class TransactionRepositoryTest {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    SimpleDateFormat dateFormat;
     private Transaction transaction;
     private User user;
 
     @BeforeEach
     void setUp() throws ParseException {
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormatUtils dateFormat = DateFormatUtils.getInstance();
 
         user = new User();
         user.setUserName("user123");
@@ -38,7 +37,7 @@ public class TransactionRepositoryTest {
 
         transaction = new Transaction();
         transaction.setName("Game purchase");
-        transaction.setCreatedDate(dateFormat.parse("19/07/2024"));
+        transaction.setCreatedDate(dateFormat.convertStringToDate("19/07/2024"));
         transaction.setValue(250.00);
         transaction.setAmountRepeat(5);
         transaction.setTransactionType(TransactionType.PAYMENT);
