@@ -85,4 +85,11 @@ public class TransactionRepositoryTest {
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
     }
+
+    @Test
+    void testSave_WhenCreatedDateIsNull_ShouldThrowsADataIntegrityViolationException() {
+        transaction.setCreatedDate(null);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
+    }
 }
