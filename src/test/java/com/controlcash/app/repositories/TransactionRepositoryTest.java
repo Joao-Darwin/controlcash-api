@@ -99,4 +99,11 @@ public class TransactionRepositoryTest {
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
     }
+
+    @Test
+    void testSave_WhenValueIsLessThanZero_ShouldThrowsADataIntegrityViolationException() {
+        transaction.setValue(-250.00);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.saveAndFlush(transaction));
+    }
 }
