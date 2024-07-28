@@ -25,10 +25,11 @@ public class TransactionRepositoryTest {
 
     private Transaction transaction;
     private User user;
+    private DateFormatUtils dateFormatUtils;
 
     @BeforeEach
     void setUp() throws ParseException {
-        DateFormatUtils dateFormat = DateFormatUtils.getInstance();
+        dateFormatUtils = DateFormatUtils.getInstance();
 
         user = new User();
         user.setUserName("user123");
@@ -39,7 +40,7 @@ public class TransactionRepositoryTest {
 
         transaction = new Transaction();
         transaction.setName("Game purchase");
-        transaction.setCreatedDate(dateFormat.convertStringToDate("19/07/2024"));
+        transaction.setCreatedDate(dateFormatUtils.convertStringToDate("19/07/2024"));
         transaction.setValue(250.00);
         transaction.setAmountRepeat(5);
         transaction.setTransactionType(TransactionType.PAYMENT);
@@ -126,5 +127,23 @@ public class TransactionRepositoryTest {
         transaction.setUser(null);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
+    }
+
+    @Test
+    void testFindAll_ShouldReturnATransactionList() throws ParseException {
+        transactionRepository.save(transaction);
+        transaction = new Transaction();
+        transaction.setName("Freelancer");
+        transaction.setValue(2500.00);
+        transaction.setTransactionType(TransactionType.ENTRANCE);
+        transaction.setCreatedDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        transaction.setAmountRepeat(5);
+        transaction.setUser(user);
+        transactionRepository.save(transaction);
+
+        List<Transaction> actualTransactions = transactionRepository.findAll();
+
+        Assertions.assertNotNull(actualTransactions);
+        Assertions.assertEquals(2, actualTransactions.size());
     }
 }
