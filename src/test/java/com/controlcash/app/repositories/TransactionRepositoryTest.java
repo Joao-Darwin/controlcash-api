@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.text.ParseException;
+import java.util.List;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -56,5 +57,24 @@ public class TransactionRepositoryTest {
         Assertions.assertEquals(transaction.getValue(), actualTransaction.getValue());
         Assertions.assertEquals(transaction.getCreatedDate(), actualTransaction.getCreatedDate());
         Assertions.assertEquals(transaction.getUser(), actualTransaction.getUser());
+    }
+
+    @Test
+    void testSave_GivenATransactionWithAllAttributes_ShouldSaveAndReturnATransaction() {
+        transaction.setDescription("The game was Assassin's Creed Origins");
+        transaction.setCategories(List.of());
+
+        Transaction actualTransaction = transactionRepository.save(transaction);
+
+        Assertions.assertNotNull(actualTransaction);
+        Assertions.assertNotNull(actualTransaction.getId());
+        Assertions.assertEquals(transaction.getAmountRepeat(), actualTransaction.getAmountRepeat());
+        Assertions.assertEquals(transaction.getDescription(), actualTransaction.getDescription());
+        Assertions.assertEquals(transaction.getName(), actualTransaction.getName());
+        Assertions.assertEquals(transaction.getTransactionType(), actualTransaction.getTransactionType());
+        Assertions.assertEquals(transaction.getValue(), actualTransaction.getValue());
+        Assertions.assertEquals(transaction.getCreatedDate(), actualTransaction.getCreatedDate());
+        Assertions.assertEquals(transaction.getUser(), actualTransaction.getUser());
+        Assertions.assertEquals(transaction.getCategories(), actualTransaction.getCategories());
     }
 }
