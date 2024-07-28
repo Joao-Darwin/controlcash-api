@@ -106,4 +106,11 @@ public class TransactionRepositoryTest {
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.saveAndFlush(transaction));
     }
+
+    @Test
+    void testSave_WhenAmountRepeatIsNull_ShouldThrowsADataIntegrityViolationException() {
+        transaction.setAmountRepeat(null);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
+    }
 }
