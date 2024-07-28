@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.text.ParseException;
 import java.util.List;
@@ -76,5 +77,12 @@ public class TransactionRepositoryTest {
         Assertions.assertEquals(transaction.getCreatedDate(), actualTransaction.getCreatedDate());
         Assertions.assertEquals(transaction.getUser(), actualTransaction.getUser());
         Assertions.assertEquals(transaction.getCategories(), actualTransaction.getCategories());
+    }
+
+    @Test
+    void testSave_WhenNameIsNull_ShouldThrowsADataIntegrityViolationException() {
+        transaction.setName(null);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
     }
 }
