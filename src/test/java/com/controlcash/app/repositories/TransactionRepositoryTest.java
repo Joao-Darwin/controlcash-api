@@ -120,4 +120,11 @@ public class TransactionRepositoryTest {
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.saveAndFlush(transaction));
     }
+
+    @Test
+    void testSave_WhenUserIsNull_ShouldThrowsADataIntegrityViolationException() {
+        transaction.setUser(null);
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> transactionRepository.save(transaction));
+    }
 }
