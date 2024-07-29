@@ -192,4 +192,19 @@ public class TransactionRepositoryTest {
 
         Assertions.assertTrue(optionalTransaction.isEmpty());
     }
+
+    @Test
+    void testUpdate_GivenATransactionWithId_ShouldUpdateTransaction() {
+        Double expectedNewValue = 345.00;
+        transaction = transactionRepository.save(transaction);
+
+        transaction.setValue(expectedNewValue);
+        transactionRepository.save(transaction);
+
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(transaction.getId());
+        Assertions.assertTrue(optionalTransaction.isPresent());
+        Transaction updatedTransaction = optionalTransaction.get();
+        Assertions.assertEquals(transaction.getId(), updatedTransaction.getId());
+        Assertions.assertEquals(expectedNewValue, updatedTransaction.getValue());
+    }
 }
