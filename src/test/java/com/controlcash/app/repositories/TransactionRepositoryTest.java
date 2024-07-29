@@ -12,6 +12,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.text.ParseException;
 import java.util.List;
@@ -145,5 +149,24 @@ public class TransactionRepositoryTest {
 
         Assertions.assertNotNull(actualTransactions);
         Assertions.assertEquals(2, actualTransactions.size());
+    }
+
+    @Test
+    void testFindAll_GivenAPageable_ShouldReturnATransactionPage() throws ParseException {
+        transactionRepository.save(transaction);
+        transaction = new Transaction();
+        transaction.setName("Freelancer");
+        transaction.setValue(2500.00);
+        transaction.setTransactionType(TransactionType.ENTRANCE);
+        transaction.setCreatedDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        transaction.setAmountRepeat(5);
+        transaction.setUser(user);
+        transactionRepository.save(transaction);
+        Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+
+        Page<Transaction> transactionPage = transactionRepository.findAll(pageable);
+
+        Assertions.assertNotNull(transactionPage);
+        Assertions.assertTrue(transactionPage.hasContent());
     }
 }
