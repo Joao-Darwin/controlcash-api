@@ -19,6 +19,8 @@ import org.springframework.data.domain.Sort;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -168,5 +170,17 @@ public class TransactionRepositoryTest {
 
         Assertions.assertNotNull(transactionPage);
         Assertions.assertTrue(transactionPage.hasContent());
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAPresentOptionalTransaction() {
+        transaction = transactionRepository.save(transaction);
+        UUID expectedId = transaction.getId();
+
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(expectedId);
+
+        Assertions.assertTrue(optionalTransaction.isPresent());
+        Transaction actualTransaction = optionalTransaction.get();
+        Assertions.assertEquals(expectedId, actualTransaction.getId());
     }
 }
