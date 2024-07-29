@@ -207,4 +207,15 @@ public class TransactionRepositoryTest {
         Assertions.assertEquals(transaction.getId(), updatedTransaction.getId());
         Assertions.assertEquals(expectedNewValue, updatedTransaction.getValue());
     }
+
+    @Test
+    void testDeleteById_GivenAnId_ShouldRemoveTransaction() {
+        transaction = transactionRepository.save(transaction);
+        UUID uuid = transaction.getId();
+
+        transactionRepository.deleteById(uuid);
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(uuid);
+
+        Assertions.assertTrue(optionalTransaction.isEmpty());
+    }
 }
