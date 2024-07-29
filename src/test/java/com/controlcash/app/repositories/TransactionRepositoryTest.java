@@ -183,4 +183,13 @@ public class TransactionRepositoryTest {
         Transaction actualTransaction = optionalTransaction.get();
         Assertions.assertEquals(expectedId, actualTransaction.getId());
     }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldReturnAEmptyOptionalTransaction() {
+        UUID id = UUID.randomUUID();
+
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(id);
+
+        Assertions.assertTrue(optionalTransaction.isEmpty());
+    }
 }
