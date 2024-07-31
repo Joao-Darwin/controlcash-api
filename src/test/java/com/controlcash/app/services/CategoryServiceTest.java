@@ -2,6 +2,7 @@ package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.category.request.CategoryRequestDTO;
 import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
+import com.controlcash.app.exceptions.CategoryNotFoundException;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.repositories.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
@@ -82,6 +83,14 @@ public class CategoryServiceTest {
 
     @Test
     void testFindById_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
-        Assertions.fail("Not implemented yet");
+        UUID id = UUID.randomUUID();
+        String expectedExceptionMessage = "Category not found. Id used: " + id;
+        Optional<Category> optionalCategory = Mockito.mock();
+        Mockito.when(optionalCategory.isPresent()).thenReturn(false);
+        Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
+
+        CategoryNotFoundException actualCategoryNotFoundException = Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.findById(id));
+
+        Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
     }
 }
