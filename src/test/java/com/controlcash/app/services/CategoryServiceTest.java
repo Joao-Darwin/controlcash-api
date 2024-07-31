@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,5 +62,26 @@ public class CategoryServiceTest {
 
         Assertions.assertNotNull(actualCategoryResponseDTO);
         Assertions.assertEquals(0, actualCategoryResponseDTO.getSize());
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnCategoryResponseDTO() {
+        UUID expectedId = UUID.randomUUID();
+        Category category = new Category(expectedId, "Electronics", List.of(), List.of());
+        Optional<Category> optionalCategory = Mockito.mock();
+        Mockito.when(optionalCategory.isPresent()).thenReturn(true);
+        Mockito.when(optionalCategory.get()).thenReturn(category);
+        Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
+
+        CategoryResponseDTO actualCategoryResponseDTO = categoryService.findById(expectedId);
+
+        Assertions.assertNotNull(actualCategoryResponseDTO);
+        Assertions.assertEquals(category.getId(), actualCategoryResponseDTO.id());
+        Assertions.assertEquals(category.getName(), actualCategoryResponseDTO.name());
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
+        Assertions.fail("Not implemented yet");
     }
 }
