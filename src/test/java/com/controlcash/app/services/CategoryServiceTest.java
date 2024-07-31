@@ -127,4 +127,29 @@ public class CategoryServiceTest {
 
         Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldDeleteTheCategory() {
+        UUID id = UUID.randomUUID();
+        Category category = new Category(id, "Electronics", List.of(), List.of());
+        Optional<Category> optionalCategory = Mockito.mock();
+        Mockito.when(optionalCategory.isPresent()).thenReturn(true);
+        Mockito.when(optionalCategory.get()).thenReturn(category);
+        Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
+
+        Assertions.assertDoesNotThrow(() -> categoryService.delete(id));
+    }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
+        UUID id = UUID.randomUUID();
+        String expectedExceptionMessage = "Category not found. Id used: " + id;
+        Optional<Category> optionalCategory = Mockito.mock();
+        Mockito.when(optionalCategory.isPresent()).thenReturn(false);
+        Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
+
+        CategoryNotFoundException actualCategoryNotFoundException = Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.delete(id));
+
+        Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
+    }
 }
