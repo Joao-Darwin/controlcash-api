@@ -14,6 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,5 +49,17 @@ public class CategoryServiceTest {
         Assertions.assertNotNull(actualCategory);
         Assertions.assertEquals(expectedCategory.getId(), actualCategory.id());
         Assertions.assertEquals(expectedCategory.getName(), actualCategory.name());
+    }
+
+    @Test
+    void testFindAll_GivenAPageable_ShouldReturnACategoryResponseDTOPage() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+        Page<Category> categoryPage = Page.empty();
+        Mockito.when(categoryRepository.findAll(Mockito.any(Pageable.class))).thenReturn(categoryPage);
+
+        Page<CategoryResponseDTO> actualCategoryResponseDTO = categoryService.findAll(pageable);
+
+        Assertions.assertNotNull(actualCategoryResponseDTO);
+        Assertions.assertEquals(0, actualCategoryResponseDTO.getSize());
     }
 }
