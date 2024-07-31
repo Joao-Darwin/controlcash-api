@@ -93,4 +93,38 @@ public class CategoryServiceTest {
 
         Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
     }
+
+    @Test
+    void testUpdate_GivenAValidId_ShouldReturnACategoryResponseDTOUpdated() {
+        String expectedNewCategoryName = "Games";
+        UUID expectedId = UUID.randomUUID();
+        Category category = new Category(expectedId, "Electronics", List.of(), List.of());
+        Category updatedCategory = new Category(expectedId, expectedNewCategoryName, List.of(), List.of());
+        Optional<Category> optionalCategory = Mockito.mock();
+        Mockito.when(optionalCategory.isPresent()).thenReturn(true);
+        Mockito.when(optionalCategory.get()).thenReturn(category);
+        Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
+        Mockito.when(categoryRepository.save(Mockito.any(Category.class))).thenReturn(updatedCategory);
+        categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
+
+        CategoryResponseDTO actualCategoryResponseDTO = categoryService.update(categoryRequestDTO, expectedId);
+
+        Assertions.assertNotNull(actualCategoryResponseDTO);
+        Assertions.assertEquals(expectedId, actualCategoryResponseDTO.id());
+        Assertions.assertEquals(expectedNewCategoryName, actualCategoryResponseDTO.name());
+    }
+
+    @Test
+    void testUpdate_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
+        UUID id = UUID.randomUUID();
+        String expectedExceptionMessage = "Category not found. Id used: " + id;
+        Optional<Category> optionalCategory = Mockito.mock();
+        Mockito.when(optionalCategory.isPresent()).thenReturn(false);
+        Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
+        categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
+
+        CategoryNotFoundException actualCategoryNotFoundException = Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.update(categoryRequestDTO, id));
+
+        Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
+    }
 }
