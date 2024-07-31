@@ -60,6 +60,8 @@ public class CategoryService {
 
         category.setName(categoryRequestDTO.name());
 
+        category = categoryRepository.save(category);
+
         return CategoryConverter.convertCategoryToCategoryResponseDTO(category);
     }
 
