@@ -30,27 +30,34 @@ public class CategoryServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+    @Mock
+    private Optional<Category> optionalCategory;
 
     @InjectMocks
     private CategoryService categoryService;
 
+    private Category category;
+    private String categoryNotFoundExceptionMessage;
     private CategoryRequestDTO categoryRequestDTO;
+    private UUID id;
 
     @BeforeEach
     void setUp() {
+        id = UUID.randomUUID();
+        category = new Category(id, "Electronics", List.of(), List.of());
+        categoryNotFoundExceptionMessage = "Category not found. Id used: " + id;
         categoryRequestDTO = new CategoryRequestDTO("Electronics", List.of(), List.of());
     }
 
     @Test
     void testCreate_GivenACategoryRequestDTO_ShouldReturnACategoryResponseDTO() {
-        Category expectedCategory = new Category(UUID.randomUUID(), "Electronics", List.of(), List.of());
-        Mockito.when(categoryRepository.save(Mockito.any())).thenReturn(expectedCategory);
+        Mockito.when(categoryRepository.save(Mockito.any())).thenReturn(category);
 
         CategoryResponseDTO actualCategory = categoryService.create(categoryRequestDTO);
 
         Assertions.assertNotNull(actualCategory);
-        Assertions.assertEquals(expectedCategory.getId(), actualCategory.id());
-        Assertions.assertEquals(expectedCategory.getName(), actualCategory.name());
+        Assertions.assertEquals(category.getId(), actualCategory.id());
+        Assertions.assertEquals(category.getName(), actualCategory.name());
     }
 
     @Test
@@ -67,14 +74,11 @@ public class CategoryServiceTest {
 
     @Test
     void testFindById_GivenAValidId_ShouldReturnCategoryResponseDTO() {
-        UUID expectedId = UUID.randomUUID();
-        Category category = new Category(expectedId, "Electronics", List.of(), List.of());
-        Optional<Category> optionalCategory = Mockito.mock();
         Mockito.when(optionalCategory.isPresent()).thenReturn(true);
         Mockito.when(optionalCategory.get()).thenReturn(category);
         Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
 
-        CategoryResponseDTO actualCategoryResponseDTO = categoryService.findById(expectedId);
+        CategoryResponseDTO actualCategoryResponseDTO = categoryService.findById(id);
 
         Assertions.assertNotNull(actualCategoryResponseDTO);
         Assertions.assertEquals(category.getId(), actualCategoryResponseDTO.id());
@@ -83,56 +87,44 @@ public class CategoryServiceTest {
 
     @Test
     void testFindById_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
-        UUID id = UUID.randomUUID();
-        String expectedExceptionMessage = "Category not found. Id used: " + id;
-        Optional<Category> optionalCategory = Mockito.mock();
         Mockito.when(optionalCategory.isPresent()).thenReturn(false);
         Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
 
         CategoryNotFoundException actualCategoryNotFoundException = Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.findById(id));
 
-        Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
+        Assertions.assertEquals(categoryNotFoundExceptionMessage, actualCategoryNotFoundException.getMessage());
     }
 
     @Test
     void testUpdate_GivenAValidId_ShouldReturnACategoryResponseDTOUpdated() {
         String expectedNewCategoryName = "Games";
-        UUID expectedId = UUID.randomUUID();
-        Category category = new Category(expectedId, "Electronics", List.of(), List.of());
-        Category updatedCategory = new Category(expectedId, expectedNewCategoryName, List.of(), List.of());
-        Optional<Category> optionalCategory = Mockito.mock();
+        Category updatedCategory = new Category(id, expectedNewCategoryName, List.of(), List.of());
         Mockito.when(optionalCategory.isPresent()).thenReturn(true);
         Mockito.when(optionalCategory.get()).thenReturn(category);
         Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
         Mockito.when(categoryRepository.save(Mockito.any(Category.class))).thenReturn(updatedCategory);
         categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
 
-        CategoryResponseDTO actualCategoryResponseDTO = categoryService.update(categoryRequestDTO, expectedId);
+        CategoryResponseDTO actualCategoryResponseDTO = categoryService.update(categoryRequestDTO, id);
 
         Assertions.assertNotNull(actualCategoryResponseDTO);
-        Assertions.assertEquals(expectedId, actualCategoryResponseDTO.id());
+        Assertions.assertEquals(id, actualCategoryResponseDTO.id());
         Assertions.assertEquals(expectedNewCategoryName, actualCategoryResponseDTO.name());
     }
 
     @Test
     void testUpdate_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
-        UUID id = UUID.randomUUID();
-        String expectedExceptionMessage = "Category not found. Id used: " + id;
-        Optional<Category> optionalCategory = Mockito.mock();
         Mockito.when(optionalCategory.isPresent()).thenReturn(false);
         Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
         categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
 
         CategoryNotFoundException actualCategoryNotFoundException = Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.update(categoryRequestDTO, id));
 
-        Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
+        Assertions.assertEquals(categoryNotFoundExceptionMessage, actualCategoryNotFoundException.getMessage());
     }
 
     @Test
     void testDelete_GivenAValidId_ShouldDeleteTheCategory() {
-        UUID id = UUID.randomUUID();
-        Category category = new Category(id, "Electronics", List.of(), List.of());
-        Optional<Category> optionalCategory = Mockito.mock();
         Mockito.when(optionalCategory.isPresent()).thenReturn(true);
         Mockito.when(optionalCategory.get()).thenReturn(category);
         Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
@@ -142,14 +134,11 @@ public class CategoryServiceTest {
 
     @Test
     void testDelete_GivenANotValidId_ShouldThrowsACategoryNotFoundException() {
-        UUID id = UUID.randomUUID();
-        String expectedExceptionMessage = "Category not found. Id used: " + id;
-        Optional<Category> optionalCategory = Mockito.mock();
         Mockito.when(optionalCategory.isPresent()).thenReturn(false);
         Mockito.when(categoryRepository.findById(Mockito.any(UUID.class))).thenReturn(optionalCategory);
 
         CategoryNotFoundException actualCategoryNotFoundException = Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.delete(id));
 
-        Assertions.assertEquals(expectedExceptionMessage, actualCategoryNotFoundException.getMessage());
+        Assertions.assertEquals(categoryNotFoundExceptionMessage, actualCategoryNotFoundException.getMessage());
     }
 }
