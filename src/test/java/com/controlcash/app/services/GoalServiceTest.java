@@ -136,4 +136,16 @@ public class GoalServiceTest {
         Assertions.assertEquals(goalUpdateRequestDTO.category(), goalCompleteResponseDTO.category());
         Assertions.assertEquals(goal.getUser(), goalCompleteResponseDTO.user());
     }
+
+    @Test
+    void testUpdate_GivenANotValidId_ShouldThrowsAGoalNotFoundException() throws ParseException {
+        Date newDueDate = dateFormatUtils.convertStringToDate("04/08/2025");
+        Double newValue = 2900.0;
+        GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(newDueDate, newValue, new Category());
+        Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        GoalNotFoundException goalNotFoundException = Assertions.assertThrows(GoalNotFoundException.class, () -> goalService.update(goalUpdateRequestDTO, id));
+
+        Assertions.assertEquals(goalNotFoundExceptionMessage, goalNotFoundException.getMessage());
+    }
 }
