@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
+import com.controlcash.app.dtos.goal.request.GoalUpdateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
 import com.controlcash.app.exceptions.GoalNotFoundException;
@@ -56,13 +57,12 @@ public class GoalService {
         return goalOptional.get();
     }
 
-    public GoalCompleteResponseDTO update(GoalCreateRequestDTO goalCreateRequestDTO, UUID id) {
+    public GoalCompleteResponseDTO update(GoalUpdateRequestDTO goalUpdateRequestDTO, UUID id) {
         Goal goal = findGoalByIdAndVerifyIfExists(id);
 
-        goal.setCategory(goalCreateRequestDTO.category());
-        goal.setDueDate(goalCreateRequestDTO.dueDate());
-        goal.setUser(goalCreateRequestDTO.user());
-        goal.setValue(goalCreateRequestDTO.value());
+        goal.setCategory(goalUpdateRequestDTO.category());
+        goal.setDueDate(goalUpdateRequestDTO.dueDate());
+        goal.setValue(goalUpdateRequestDTO.value());
 
         goal = goalRepository.save(goal);
 
