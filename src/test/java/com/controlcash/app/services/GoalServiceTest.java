@@ -3,6 +3,7 @@ package com.controlcash.app.services;
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
+import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +44,7 @@ public class GoalServiceTest {
     private DateFormatUtils dateFormatUtils;
     private Goal goal;
     private GoalCreateRequestDTO goalCreateRequestDTO;
+    private String goalNotFoundExceptionMessage;
     private UUID id;
 
     @BeforeEach
@@ -52,6 +55,8 @@ public class GoalServiceTest {
         id = UUID.randomUUID();
         goal = new Goal(id, createdDate, 2500.0, new User(), new Category());
         goalCreateRequestDTO = new GoalCreateRequestDTO(createdDate, 2500.0, new User(), new Category());
+
+        goalNotFoundExceptionMessage = "Goal not found. Id used: " + id;
     }
 
     @Test
@@ -90,5 +95,26 @@ public class GoalServiceTest {
 
         Assertions.assertNotNull(actualGoalSimpleResponseDTOPage);
         Assertions.assertTrue(actualGoalSimpleResponseDTOPage.isEmpty());
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAGoalCompleteResponseDTO() {
+        Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(goal));
+
+        GoalCompleteResponseDTO actualGoalCompleteResponseDTO = goalService.findById(id);
+
+        Assertions.assertNotNull(actualGoalCompleteResponseDTO);
+        Assertions.assertEquals(id, actualGoalCompleteResponseDTO.id());
+        Assertions.assertEquals(goal.getDueDate(), actualGoalCompleteResponseDTO.dueDate());
+        Assertions.assertEquals(goal.getValue(), actualGoalCompleteResponseDTO.value());
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldThrowsAGoalNotFoundException() {
+        Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        GoalNotFoundException goalNotFoundException = Assertions.assertThrows(GoalNotFoundException.class, () -> goalService.findById(id));
+
+        Assertions.assertEquals(goalNotFoundExceptionMessage, goalNotFoundException.getMessage());
     }
 }
