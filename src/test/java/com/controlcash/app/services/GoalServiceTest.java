@@ -148,4 +148,24 @@ public class GoalServiceTest {
 
         Assertions.assertEquals(goalNotFoundExceptionMessage, goalNotFoundException.getMessage());
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldDeleteGoal() {
+        Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(goal));
+        Mockito.doNothing().when(goalRepository).delete(Mockito.any(Goal.class));
+
+        Assertions.assertDoesNotThrow(() -> goalService.delete(id));
+
+        Mockito.verify(goalRepository, Mockito.times(1)).delete(Mockito.any(Goal.class));
+    }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldThrowsAGoalNotFoundException() {
+        Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        GoalNotFoundException goalNotFoundException = Assertions.assertThrows(GoalNotFoundException.class, () -> goalService.delete(id));
+
+        Assertions.assertEquals(goalNotFoundExceptionMessage, goalNotFoundException.getMessage());
+        Mockito.verify(goalRepository, Mockito.never()).delete(Mockito.any(Goal.class));
+    }
 }
