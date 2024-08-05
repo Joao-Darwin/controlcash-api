@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
+import com.controlcash.app.dtos.goal.request.GoalUpdateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
 import com.controlcash.app.exceptions.GoalNotFoundException;
@@ -50,11 +51,11 @@ public class GoalServiceTest {
     @BeforeEach
     void setUp() throws ParseException {
         dateFormatUtils = DateFormatUtils.getInstance();
-        Date createdDate = dateFormatUtils.convertStringToDate("01/08/2024");
+        Date dueDate = dateFormatUtils.convertStringToDate("01/08/2024");
 
         id = UUID.randomUUID();
-        goal = new Goal(id, createdDate, 2500.0, new User(), new Category());
-        goalCreateRequestDTO = new GoalCreateRequestDTO(createdDate, 2500.0, new User(), new Category());
+        goal = new Goal(id, dueDate, 2500.0, new User(), new Category());
+        goalCreateRequestDTO = new GoalCreateRequestDTO(dueDate, 2500.0, new User(), new Category());
 
         goalNotFoundExceptionMessage = "Goal not found. Id used: " + id;
     }
@@ -116,5 +117,23 @@ public class GoalServiceTest {
         GoalNotFoundException goalNotFoundException = Assertions.assertThrows(GoalNotFoundException.class, () -> goalService.findById(id));
 
         Assertions.assertEquals(goalNotFoundExceptionMessage, goalNotFoundException.getMessage());
+    }
+
+    @Test
+    void testUpdate_GivenAGoalCreateRequestDTOAndValidId_ShouldReturnAGoalCompleteResponseDTOUpdated() throws ParseException {
+        Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(goal));
+        Date newDueDate = dateFormatUtils.convertStringToDate("04/08/2025");
+        Double newValue = 2900.0;
+        GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(newDueDate, newValue, new Category());
+        Goal goalUpdated = new Goal(id, newDueDate, newValue, goal.getUser(), goalUpdateRequestDTO.category());
+        Mockito.when(goalRepository.save(Mockito.any(Goal.class))).thenReturn(goalUpdated);
+
+        GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.update(goalUpdateRequestDTO, id);
+
+        Assertions.assertNotNull(goalCompleteResponseDTO);
+        Assertions.assertEquals(goalUpdateRequestDTO.dueDate(), goalCompleteResponseDTO.dueDate());
+        Assertions.assertEquals(goalUpdateRequestDTO.value(), goalCompleteResponseDTO.value());
+        Assertions.assertEquals(goalUpdateRequestDTO.category(), goalCompleteResponseDTO.category());
+        Assertions.assertEquals(goal.getUser(), goalCompleteResponseDTO.user());
     }
 }
