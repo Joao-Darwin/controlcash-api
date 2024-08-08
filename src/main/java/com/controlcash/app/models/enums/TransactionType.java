@@ -25,6 +25,6 @@ public enum TransactionType {
             }
         }
 
-        throw new IllegalArgumentException("Invalid TransactionType code");
+        throw new IllegalArgumentException("Invalid TransactionType code. Used: " + code);
     }
 }
