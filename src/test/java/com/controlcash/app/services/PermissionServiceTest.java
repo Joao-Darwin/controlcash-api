@@ -3,6 +3,7 @@ package com.controlcash.app.services;
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
+import com.controlcash.app.exceptions.PermissionNotFoundException;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.repositories.PermissionRepository;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +36,7 @@ public class PermissionServiceTest {
     @InjectMocks
     private PermissionService permissionService;
 
+    private String expectedPermissionNotFoundExceptionMessage;
     private UUID id;
     private Permission permission;
     private PermissionCreateRequestDTO permissionCreateRequestDTO;
@@ -42,6 +45,7 @@ public class PermissionServiceTest {
     void setUp() {
         String description = "Admin";
         id = UUID.randomUUID();
+        expectedPermissionNotFoundExceptionMessage = "Permission not found. Id used: " + id;
         permission = new Permission(id, description, List.of());
         permissionCreateRequestDTO = new PermissionCreateRequestDTO(description);
     }
@@ -80,5 +84,25 @@ public class PermissionServiceTest {
 
         Assertions.assertNotNull(actualAllPermissionResponseDTOS);
         Assertions.assertTrue(actualAllPermissionResponseDTOS.isEmpty());
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAPermissionResponseDTO() {
+        Mockito.when(permissionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(permission));
+
+        PermissionResponseDTO actualPermissionResponseDTO = Assertions.assertDoesNotThrow(() -> permissionService.findById(id));
+
+        Assertions.assertNotNull(actualPermissionResponseDTO);
+        Assertions.assertEquals(id, actualPermissionResponseDTO.id());
+        Assertions.assertEquals(permission.getAuthority(), actualPermissionResponseDTO.description());
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldThrowsAPermissionNotFoundException() {
+        Mockito.when(permissionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        PermissionNotFoundException permissionNotFoundException = Assertions.assertThrows(PermissionNotFoundException.class, () -> permissionService.findById(id));
+
+        Assertions.assertEquals(expectedPermissionNotFoundExceptionMessage, permissionNotFoundException.getMessage());
     }
 }
