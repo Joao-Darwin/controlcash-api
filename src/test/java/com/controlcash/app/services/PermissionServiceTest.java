@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.repositories.PermissionRepository;
@@ -14,6 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.UUID;
@@ -49,5 +55,30 @@ public class PermissionServiceTest {
         Assertions.assertNotNull(actualPermissionResponseDTO);
         Assertions.assertNotNull(actualPermissionResponseDTO.id());
         Assertions.assertEquals(permissionCreateRequestDTO.description(), actualPermissionResponseDTO.description());
+    }
+
+    @Test
+    void testFindAll_GivenAPageable_ShouldReturnAPageWithAllPermissionResponseDTO() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "description");
+        List<Permission> allPermissionList = List.of(permission, new Permission(UUID.randomUUID(), "User", List.of()));
+        Page<Permission> permissionPage = new PageImpl<>(allPermissionList);
+        Mockito.when(permissionRepository.findAll(Mockito.any(Pageable.class))).thenReturn(permissionPage);
+
+        Page<AllPermissionResponseDTO> actualAllPermissionResponseDTOS = permissionService.findAll(pageable);
+
+        Assertions.assertNotNull(actualAllPermissionResponseDTOS);
+        Assertions.assertEquals(2, actualAllPermissionResponseDTOS.getSize());
+    }
+
+    @Test
+    void testFindAll_GivenAPageableWithNotValues_ShouldReturnAPageWithAllPermissionResponseDTOEmpty() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "description");
+        Page<Permission> permissionPage = Page.empty();
+        Mockito.when(permissionRepository.findAll(Mockito.any(Pageable.class))).thenReturn(permissionPage);
+
+        Page<AllPermissionResponseDTO> actualAllPermissionResponseDTOS = permissionService.findAll(pageable);
+
+        Assertions.assertNotNull(actualAllPermissionResponseDTOS);
+        Assertions.assertTrue(actualAllPermissionResponseDTOS.isEmpty());
     }
 }
