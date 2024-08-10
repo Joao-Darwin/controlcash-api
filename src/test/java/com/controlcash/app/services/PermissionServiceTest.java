@@ -140,4 +140,14 @@ public class PermissionServiceTest {
 
         Mockito.verify(permissionRepository, Mockito.times(1)).delete(Mockito.any(Permission.class));
     }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldThrowsAPermissionNotFoundException() {
+        Mockito.when(permissionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        PermissionNotFoundException permissionNotFoundException = Assertions.assertThrows(PermissionNotFoundException.class, () -> permissionService.delete(id));
+
+        Assertions.assertEquals(expectedPermissionNotFoundExceptionMessage, permissionNotFoundException.getMessage());
+        Mockito.verify(permissionRepository, Mockito.never()).delete(Mockito.any(Permission.class));
+    }
 }
