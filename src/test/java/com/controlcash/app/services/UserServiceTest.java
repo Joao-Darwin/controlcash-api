@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
+import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCreateResponseDTO;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.UserRepository;
@@ -12,6 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -71,5 +77,28 @@ public class UserServiceTest {
         Assertions.assertNotNull(actualUserCreateResponseDTO.id());
         Assertions.assertEquals(userCreateRequestDTO.email(), actualUserCreateResponseDTO.email());
         Assertions.assertEquals(userCreateRequestDTO.userName(), actualUserCreateResponseDTO.userName());
+    }
+
+    @Test
+    void testFindAll_GivenAPageable_ShouldReturnAPageWithUserAllResponseDTO() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "userName");
+        Page<User> userPage = new PageImpl<>(List.of(user, new User()));
+        Mockito.when(userRepository.findAll(Mockito.any(Pageable.class))).thenReturn(userPage);
+
+        Page<UserAllResponseDTO> actualUserPage = userService.findAll(pageable);
+
+        Assertions.assertNotNull(actualUserPage);
+        Assertions.assertEquals(2, actualUserPage.getSize());
+    }
+
+    @Test
+    void testFindAll_GivenAPageableWithoutUsers_ShouldReturnAnEmptyPage() {
+        Pageable pageable = PageRequest.of(10, 10, Sort.Direction.ASC, "userName");
+        Mockito.when(userRepository.findAll(Mockito.any(Pageable.class))).thenReturn(Page.empty());
+
+        Page<UserAllResponseDTO> actualUserPage = userService.findAll(pageable);
+
+        Assertions.assertNotNull(actualUserPage);
+        Assertions.assertTrue(actualUserPage.isEmpty());
     }
 }
