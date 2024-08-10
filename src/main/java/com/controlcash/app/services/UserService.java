@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,10 +39,10 @@ public class UserService {
         return UserConverter.convertUserToUserCreateResponseDTO(user);
     }
 
-    public List<UserAllResponseDTO> findAll(Pageable pageable) {
+    public Page<UserAllResponseDTO> findAll(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
 
-        return users.map(UserConverter::convertUserToUserAllResponseDTO).stream().toList();
+        return users.map(UserConverter::convertUserToUserAllResponseDTO);
     }
 
     public UserCompleteResponseDTO findById(UUID id) {
