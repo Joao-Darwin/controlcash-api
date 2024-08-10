@@ -34,6 +34,12 @@ public class Permission implements GrantedAuthority, Serializable {
     public Permission() {
     }
 
+    public Permission(UUID id, String description, List<User> users) {
+        this.id = id;
+        this.description = description;
+        this.users = users;
+    }
+
     public UUID getId() {
         return this.id;
     }
