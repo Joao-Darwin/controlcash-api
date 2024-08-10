@@ -53,14 +53,17 @@ public class UserConverterTest {
 
     @Test
     public void testConvertUserToUserCreateResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateResponseDTO() {
+        UUID expectedId = UUID.randomUUID();
         String expectedUserName = "joodarwin";
         String expectedEmail = "joaodarwin@email.com";
         User user = new User();
+        user.setId(expectedId);
         user.setUserName(expectedUserName);
         user.setEmail(expectedEmail);
 
         UserCreateResponseDTO userCreateResponseDTO = UserConverter.convertUserToUserCreateResponseDTO(user);
 
+        Assertions.assertEquals(expectedId, userCreateResponseDTO.id());
         Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
     }

@@ -24,7 +24,7 @@ public class UserConverter {
     }
 
     public static UserCreateResponseDTO convertUserToUserCreateResponseDTO(User user) {
-        return new UserCreateResponseDTO(user.getUsername(), user.getEmail());
+        return new UserCreateResponseDTO(user.getId(), user.getUsername(), user.getEmail());
     }
 
     public static UserAllResponseDTO convertUserToUserAllResponseDTO(User user) {
