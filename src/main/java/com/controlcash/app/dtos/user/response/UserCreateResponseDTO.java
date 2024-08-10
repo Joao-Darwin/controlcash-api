@@ -1,4 +1,6 @@
 package com.controlcash.app.dtos.user.response;
 
-public record UserCreateResponseDTO(String userName, String email) {
+import java.util.UUID;
+
+public record UserCreateResponseDTO(UUID id, String userName, String email) {
 }

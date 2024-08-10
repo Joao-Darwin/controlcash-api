@@ -48,6 +48,22 @@ public class User implements UserDetails {
     public User() {
     }
 
+    public User(UUID id, String userName, String email, String password, String fullName, Double salary, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled, List<Permission> permissions, List<Goal> goals, List<Transaction> transactions) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.salary = salary;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+        this.enabled = enabled;
+        this.permissions = permissions;
+        this.goals = goals;
+        this.transactions = transactions;
+    }
+
     public UUID getId() {
         return this.id;
     }
