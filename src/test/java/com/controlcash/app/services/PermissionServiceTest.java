@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.request.PermissionUpdateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.exceptions.PermissionNotFoundException;
@@ -104,5 +105,19 @@ public class PermissionServiceTest {
         PermissionNotFoundException permissionNotFoundException = Assertions.assertThrows(PermissionNotFoundException.class, () -> permissionService.findById(id));
 
         Assertions.assertEquals(expectedPermissionNotFoundExceptionMessage, permissionNotFoundException.getMessage());
+    }
+
+    @Test
+    void testUpdate_GivenAPermissionUpdateRequestDTOAndValidId_ShouldReturnAPermissionResponseDTOUpdated() {
+        PermissionUpdateRequestDTO permissionUpdateRequestDTO = new PermissionUpdateRequestDTO("Admin", List.of());
+        Permission permissionUpdated = new Permission(id, "Admin", List.of());
+        Mockito.when(permissionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(permission));
+        Mockito.when(permissionRepository.save(Mockito.any(Permission.class))).thenReturn(permissionUpdated);
+
+        PermissionResponseDTO actualPermissionResponseDTO = Assertions.assertDoesNotThrow(() -> permissionService.update(permissionUpdateRequestDTO, id));
+
+        Assertions.assertNotNull(actualPermissionResponseDTO);
+        Assertions.assertEquals(id, actualPermissionResponseDTO.id());
+        Assertions.assertEquals(permissionUpdateRequestDTO.description(), actualPermissionResponseDTO.description());
     }
 }
