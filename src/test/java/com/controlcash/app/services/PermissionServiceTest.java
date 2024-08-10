@@ -130,4 +130,14 @@ public class PermissionServiceTest {
 
         Assertions.assertEquals(expectedPermissionNotFoundExceptionMessage, permissionNotFoundException.getMessage());
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldDeletePermissionWithSameId() {
+        Mockito.when(permissionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(permission));
+        Mockito.doNothing().when(permissionRepository).delete(Mockito.any(Permission.class));
+
+        Assertions.assertDoesNotThrow(() -> permissionService.delete(id));
+
+        Mockito.verify(permissionRepository, Mockito.times(1)).delete(Mockito.any(Permission.class));
+    }
 }
