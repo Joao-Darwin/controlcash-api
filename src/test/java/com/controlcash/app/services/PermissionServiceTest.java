@@ -120,4 +120,14 @@ public class PermissionServiceTest {
         Assertions.assertEquals(id, actualPermissionResponseDTO.id());
         Assertions.assertEquals(permissionUpdateRequestDTO.description(), actualPermissionResponseDTO.description());
     }
+
+    @Test
+    void testUpdate_GivenAPermissionUpdateRequestDTOAndNotValidId_ShouldThrowsAPermissionNotFoundException() {
+        PermissionUpdateRequestDTO permissionUpdateRequestDTO = new PermissionUpdateRequestDTO("Admin", List.of());
+        Mockito.when(permissionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        PermissionNotFoundException permissionNotFoundException = Assertions.assertThrows(PermissionNotFoundException.class, () -> permissionService.update(permissionUpdateRequestDTO, id));
+
+        Assertions.assertEquals(expectedPermissionNotFoundExceptionMessage, permissionNotFoundException.getMessage());
+    }
 }
