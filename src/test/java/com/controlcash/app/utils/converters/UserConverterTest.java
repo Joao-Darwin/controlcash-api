@@ -25,10 +25,10 @@ public class UserConverterTest {
         String expectedPassword = "123456";
         String expectedFullName = "João Darwin";
         Double expectedSalary = 3900.00;
-        boolean expectedAccountNonExpired = false;
-        boolean expectedAccountNonLocked = false;
-        boolean expectedCredentialsNonExpired = false;
-        boolean expectedEnabled = false;
+        boolean expectedAccountNonExpired = true;
+        boolean expectedAccountNonLocked = true;
+        boolean expectedCredentialsNonExpired = true;
+        boolean expectedEnabled = true;
         UserCreateRequestDTO userCreateRequestDTO = new UserCreateRequestDTO(expectedUserName, expectedEmail, expectedPassword, expectedFullName, expectedSalary);
 
         User user = UserConverter.convertUserCreateRequestDTOToUser(userCreateRequestDTO);

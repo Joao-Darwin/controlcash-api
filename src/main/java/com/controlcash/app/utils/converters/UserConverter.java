@@ -15,10 +15,10 @@ public class UserConverter {
         user.setPassword(userCreateRequestDTO.password());
         user.setFullName(userCreateRequestDTO.fullName());
         user.setSalary(userCreateRequestDTO.salary());
-        user.setAccountNonExpired(false);
-        user.setAccountNonLocked(false);
-        user.setCredentialsNonExpired(false);
-        user.setEnabled(false);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+        user.setEnabled(true);
 
         return user;
     }
