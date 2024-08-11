@@ -114,7 +114,6 @@ public class UserConverterTest {
         Assertions.assertEquals(expectedId, userCompleteResponseDTO.id());
         Assertions.assertEquals(expectedUserName, userCompleteResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCompleteResponseDTO.email());
-        Assertions.assertEquals(expectedPassword, userCompleteResponseDTO.password());
         Assertions.assertEquals(expectedFullName, userCompleteResponseDTO.fullName());
         Assertions.assertEquals(expectedSalary, userCompleteResponseDTO.salary());
         Assertions.assertEquals(expectedPermissionsLikeString, userCompleteResponseDTO.permissions());
