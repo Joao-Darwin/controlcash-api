@@ -32,6 +32,6 @@ public class UserConverter {
     }
 
     public static UserCompleteResponseDTO convertUserToUserCompleteResponseDTO(User user) {
-        return new UserCompleteResponseDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getFullName(), user.getSalary(), user.getRoles(), user.getGoals(), user.getTransactions());
+        return new UserCompleteResponseDTO(user.getId(), user.getUsername(), user.getEmail(), user.getFullName(), user.getSalary(), user.getRoles(), user.getGoals(), user.getTransactions());
     }
 }
