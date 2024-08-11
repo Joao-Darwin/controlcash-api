@@ -2,12 +2,16 @@ package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
 import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
+import com.controlcash.app.dtos.user.response.UserCompleteResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCreateResponseDTO;
+import com.controlcash.app.exceptions.UserNotFoundException;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,9 +25,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class UserServiceTest {
 
     @Mock
@@ -38,10 +44,12 @@ public class UserServiceTest {
     private UUID id;
     private User user;
     private UserCreateRequestDTO userCreateRequestDTO;
+    private String userNotFoundExceptionMessage;
 
     @BeforeEach
     void setUp() {
         id = UUID.randomUUID();
+        userNotFoundExceptionMessage = "User not found. Id used: " + id;
         user = new User(
                 id,
                 "fooBar",
@@ -100,5 +108,27 @@ public class UserServiceTest {
 
         Assertions.assertNotNull(actualUserPage);
         Assertions.assertTrue(actualUserPage.isEmpty());
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAnUserCompleteResponseDTO() {
+        Mockito.when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(user));
+
+        UserCompleteResponseDTO actualUserCompleteResponseDTO = Assertions.assertDoesNotThrow(() -> userService.findById(id));
+
+        Assertions.assertNotNull(actualUserCompleteResponseDTO);
+        Assertions.assertEquals(id, actualUserCompleteResponseDTO.id());
+        Assertions.assertEquals(user.getEmail(), actualUserCompleteResponseDTO.email());
+        Assertions.assertEquals(user.getFullName(), actualUserCompleteResponseDTO.fullName());
+        Assertions.assertEquals(user.getUsername(), actualUserCompleteResponseDTO.userName());
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldThrowsAnUserNotFoundException() {
+        Mockito.when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        UserNotFoundException userNotFoundException = Assertions.assertThrows(UserNotFoundException.class, () -> userService.findById(id));
+
+        Assertions.assertEquals(userNotFoundExceptionMessage, userNotFoundException.getMessage());
     }
 }
