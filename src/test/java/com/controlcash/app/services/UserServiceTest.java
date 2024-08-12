@@ -131,4 +131,55 @@ public class UserServiceTest {
 
         Assertions.assertEquals(userNotFoundExceptionMessage, userNotFoundException.getMessage());
     }
+
+    @Test
+    void testUpdate_GivenAnUserCreateRequestDTOAndValidId_ShouldReturnAnUserCreateResponseDTOUpdated() {
+        User userUpdated = new User(
+                id,
+                "fooBar2",
+                "foobar2@gmail.com",
+                "1234567",
+                "Foo Bar2",
+                1500.00,
+                true,
+                true,
+                true,
+                true,
+                List.of(),
+                List.of(),
+                List.of());
+        UserCreateRequestDTO userCreateRequestDTOUpdated = new UserCreateRequestDTO(
+                "fooBar2",
+                "foobar2@gmail.com",
+                "1234567",
+                "Foo Bar2",
+                1500.00);
+        Mockito.when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(userUpdated);
+        Mockito.when(passwordEncoder.encode(Mockito.anyString()))
+                .thenReturn("$2a$12$pQkRscbGtwUoX2bCqB6Ww.PTuDJlF/PnuosheRWv3jbL7nEicCc2u");
+
+        UserCreateResponseDTO actualUserResponseDTO = userService.update(id, userCreateRequestDTOUpdated);
+
+        Mockito.verify(passwordEncoder, Mockito.times(1)).encode(Mockito.anyString());
+        Assertions.assertNotNull(actualUserResponseDTO);
+        Assertions.assertNotNull(actualUserResponseDTO.id());
+        Assertions.assertEquals(actualUserResponseDTO.email(), userCreateRequestDTOUpdated.email());
+        Assertions.assertEquals(actualUserResponseDTO.userName(), userCreateRequestDTOUpdated.userName());
+    }
+
+    @Test
+    void testUpdate_GivenAnUserCreateRequestDTOAndNotValidId_ShouldThrowsAnUserNotFoundException() {
+        UserCreateRequestDTO userCreateRequestDTOUpdated = new UserCreateRequestDTO(
+                "fooBar2",
+                "foobar2@gmail.com",
+                "1234567",
+                "Foo Bar2",
+                1500.00);
+        Mockito.when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        UserNotFoundException userNotFoundException = Assertions.assertThrows(UserNotFoundException.class, () -> userService.update(id, userCreateRequestDTOUpdated));
+
+        Assertions.assertEquals(userNotFoundExceptionMessage, userNotFoundException.getMessage());
+    }
 }
