@@ -182,4 +182,22 @@ public class UserServiceTest {
 
         Assertions.assertEquals(userNotFoundExceptionMessage, userNotFoundException.getMessage());
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldDeleteUser() {
+        Mockito.when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(user));
+
+        Assertions.assertDoesNotThrow(() -> userService.delete(id));
+
+        Mockito.verify(userRepository, Mockito.times(1)).delete(Mockito.any(User.class));
+    }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldThrowsAnUserNotFoundException() {
+        Mockito.when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        UserNotFoundException userNotFoundException = Assertions.assertThrows(UserNotFoundException.class, () -> userService.delete(id));
+
+        Assertions.assertEquals(userNotFoundExceptionMessage, userNotFoundException.getMessage());
+    }
 }
