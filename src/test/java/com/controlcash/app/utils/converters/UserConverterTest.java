@@ -25,10 +25,10 @@ public class UserConverterTest {
         String expectedPassword = "123456";
         String expectedFullName = "João Darwin";
         Double expectedSalary = 3900.00;
-        boolean expectedAccountNonExpired = false;
-        boolean expectedAccountNonLocked = false;
-        boolean expectedCredentialsNonExpired = false;
-        boolean expectedEnabled = false;
+        boolean expectedAccountNonExpired = true;
+        boolean expectedAccountNonLocked = true;
+        boolean expectedCredentialsNonExpired = true;
+        boolean expectedEnabled = true;
         UserCreateRequestDTO userCreateRequestDTO = new UserCreateRequestDTO(expectedUserName, expectedEmail, expectedPassword, expectedFullName, expectedSalary);
 
         User user = UserConverter.convertUserCreateRequestDTOToUser(userCreateRequestDTO);
@@ -53,14 +53,17 @@ public class UserConverterTest {
 
     @Test
     public void testConvertUserToUserCreateResponseDTO_WhenUserIsPassed_ShouldReturnUserCreateResponseDTO() {
+        UUID expectedId = UUID.randomUUID();
         String expectedUserName = "joodarwin";
         String expectedEmail = "joaodarwin@email.com";
         User user = new User();
+        user.setId(expectedId);
         user.setUserName(expectedUserName);
         user.setEmail(expectedEmail);
 
         UserCreateResponseDTO userCreateResponseDTO = UserConverter.convertUserToUserCreateResponseDTO(user);
 
+        Assertions.assertEquals(expectedId, userCreateResponseDTO.id());
         Assertions.assertEquals(expectedUserName, userCreateResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCreateResponseDTO.email());
     }
@@ -111,7 +114,6 @@ public class UserConverterTest {
         Assertions.assertEquals(expectedId, userCompleteResponseDTO.id());
         Assertions.assertEquals(expectedUserName, userCompleteResponseDTO.userName());
         Assertions.assertEquals(expectedEmail, userCompleteResponseDTO.email());
-        Assertions.assertEquals(expectedPassword, userCompleteResponseDTO.password());
         Assertions.assertEquals(expectedFullName, userCompleteResponseDTO.fullName());
         Assertions.assertEquals(expectedSalary, userCompleteResponseDTO.salary());
         Assertions.assertEquals(expectedPermissionsLikeString, userCompleteResponseDTO.permissions());

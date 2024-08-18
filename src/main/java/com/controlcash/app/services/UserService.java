@@ -11,9 +11,9 @@ import com.controlcash.app.utils.converters.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,25 +21,28 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserCreateResponseDTO create(UserCreateRequestDTO userCreateRequestDTO) {
         User user = UserConverter.convertUserCreateRequestDTOToUser(userCreateRequestDTO);
 
-        // TODO: Add password encrypt before save on database
+        String encryptedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
         user = userRepository.save(user);
 
         return UserConverter.convertUserToUserCreateResponseDTO(user);
     }
 
-    public List<UserAllResponseDTO> findAll(Pageable pageable) {
+    public Page<UserAllResponseDTO> findAll(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
 
-        return users.map(UserConverter::convertUserToUserAllResponseDTO).stream().toList();
+        return users.map(UserConverter::convertUserToUserAllResponseDTO);
     }
 
     public UserCompleteResponseDTO findById(UUID id) {
@@ -72,8 +75,7 @@ public class UserService {
     private void updateUser(User user, UserCreateRequestDTO userCreateRequestDTO) {
         user.setUserName(userCreateRequestDTO.userName());
         user.setEmail(userCreateRequestDTO.email());
-        // TODO: Add password encrypt before save on database
-        user.setPassword(userCreateRequestDTO.password());
+        user.setPassword(passwordEncoder.encode(userCreateRequestDTO.password()));
         user.setFullName(userCreateRequestDTO.fullName());
         user.setSalary(userCreateRequestDTO.salary());
     }

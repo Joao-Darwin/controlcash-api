@@ -31,7 +31,8 @@ public class Transaction implements Serializable {
     @Column(nullable = false, columnDefinition = "INT CHECK (amount_repeat >= 0)")
     private Integer amountRepeat;
     @Column(nullable = false)
-    private Integer transactionType;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private User user;
@@ -92,11 +93,11 @@ public class Transaction implements Serializable {
     }
 
     public TransactionType getTransactionType() {
-        return TransactionType.valueOf(this.transactionType);
+        return this.transactionType;
     }
 
     public void setTransactionType(TransactionType transactionType) {
-        this.transactionType = transactionType.getCode();
+        this.transactionType = transactionType;
     }
 
     public User getUser() {
