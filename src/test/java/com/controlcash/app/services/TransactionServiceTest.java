@@ -1,6 +1,7 @@
 package com.controlcash.app.services;
 
 import com.controlcash.app.repositories.TransactionRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ public class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
+    @BeforeEach
     void setUp() {
     }
 }
