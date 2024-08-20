@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,10 +33,10 @@ public class TransactionService {
         return TransactionConverter.convertTransactionToTransactionCreateResponseDTO(transaction);
     }
 
-    public List<TransactionCreateResponseDTO> findAll(Pageable pageable) {
+    public Page<TransactionCreateResponseDTO> findAll(Pageable pageable) {
         Page<Transaction> transactions = transactionRepository.findAll(pageable);
 
-        return transactions.map(TransactionConverter::convertTransactionToTransactionCreateResponseDTO).toList();
+        return transactions.map(TransactionConverter::convertTransactionToTransactionCreateResponseDTO);
     }
 
     public TransactionCompleteResponseDTO findById(UUID id) {
