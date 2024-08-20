@@ -17,6 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Date;
 import java.util.List;
@@ -65,5 +70,25 @@ public class TransactionServiceTest {
         Assertions.assertNotNull(transactionCreateResponseDTO.createdDate());
         Assertions.assertEquals(transactionCreateResponseDTO.name(), transactionCreateRequestDTO.name());
         Assertions.assertEquals(transactionCreateResponseDTO.description(), transactionCreateRequestDTO.description());
+    }
+
+    @Test
+    void testFindAll_GivenAPageable_ShouldReturnAPageWithTransactionCreateResponseDTO() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "name");
+        Transaction transaction2 = new TransactionBuilder(TransactionType.ENTRANCE)
+                .addId(UUID.randomUUID())
+                .addName("Salary")
+                .addDescription("My salary from job")
+                .addValue(1459.99)
+                .addAmountRepeat(0)
+                .addCreatedDate(new Date())
+                .build();
+        Page<Transaction> transactionPage = new PageImpl<>(List.of(transaction, transaction2));
+        Mockito.when(transactionRepository.findAll(Mockito.any(Pageable.class))).thenReturn(transactionPage);
+
+        Page<TransactionCreateResponseDTO> actualTransactionPage = transactionService.findAll(pageable);
+
+        Assertions.assertNotNull(actualTransactionPage);
+        Assertions.assertEquals(2, actualTransactionPage.getSize());
     }
 }
