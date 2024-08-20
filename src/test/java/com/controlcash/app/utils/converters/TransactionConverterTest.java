@@ -79,6 +79,7 @@ public class TransactionConverterTest {
                 .addCreatedDate(expectedCreatedDate)
                 .addValue(expectedValue)
                 .addAmountRepeat(expectedAmountRepeat)
+                .addCategories(List.of())
                 .build();
 
         TransactionCompleteResponseDTO transactionCompleteResponseDTO = TransactionConverter.convertTransactionToTransactionCompleteResponseDTO(transaction);
