@@ -2,6 +2,7 @@ package com.controlcash.app.services;
 
 import com.controlcash.app.builder.TransactionBuilder;
 import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
+import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +50,7 @@ public class TransactionServiceTest {
                 .addValue(245.39)
                 .addAmountRepeat(0)
                 .addCreatedDate(new Date())
+                .addCategories(List.of())
                 .build();
     }
 
@@ -90,5 +93,22 @@ public class TransactionServiceTest {
 
         Assertions.assertNotNull(actualTransactionPage);
         Assertions.assertEquals(2, actualTransactionPage.getSize());
+    }
+
+    @Test
+    void testFindById_GivenAnExistingId_ShouldReturnATransactionCompleteResponseDTO() {
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(transaction));
+
+        TransactionCompleteResponseDTO actualTransactionCompleteResponseDTO = Assertions.assertDoesNotThrow(() -> transactionService.findById(UUID.randomUUID()));
+
+        Assertions.assertNotNull(actualTransactionCompleteResponseDTO);
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.id(), transaction.getId());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.name(), transaction.getName());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.description(), transaction.getDescription());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.createdDate(), transaction.getCreatedDate());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.value(), transaction.getValue());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.amountRepeat(), transaction.getAmountRepeat());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.transactionType(), transaction.getTransactionType());
+        Assertions.assertEquals(actualTransactionCompleteResponseDTO.categories().size(), transaction.getCategories().size());
     }
 }
