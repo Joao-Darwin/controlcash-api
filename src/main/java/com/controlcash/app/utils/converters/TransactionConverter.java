@@ -1,10 +1,13 @@
 package com.controlcash.app.utils.converters;
 
 import com.controlcash.app.builder.TransactionBuilder;
+import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
 import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
 import com.controlcash.app.models.Transaction;
+
+import java.util.List;
 
 public class TransactionConverter {
 
@@ -24,6 +27,8 @@ public class TransactionConverter {
     }
 
     public static TransactionCompleteResponseDTO convertTransactionToTransactionCompleteResponseDTO(Transaction transaction) {
+        List<CategoryResponseDTO> categories = transaction.getCategories().stream().map(CategoryConverter::convertCategoryToCategoryResponseDTO).toList();
+
         return new TransactionCompleteResponseDTO(transaction.getId(),
                 transaction.getName(),
                 transaction.getDescription(),
@@ -31,6 +36,6 @@ public class TransactionConverter {
                 transaction.getValue(),
                 transaction.getAmountRepeat(),
                 transaction.getTransactionType(),
-                transaction.getCategories());
+                categories);
     }
 }
