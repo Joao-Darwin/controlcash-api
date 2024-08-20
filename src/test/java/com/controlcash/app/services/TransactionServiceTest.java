@@ -4,6 +4,7 @@ import com.controlcash.app.builder.TransactionBuilder;
 import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
+import com.controlcash.app.exceptions.TransactionNotFoundException;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
@@ -39,12 +40,16 @@ public class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
+    private UUID id;
     private Transaction transaction;
+    private String expectedTransactionNotFoundExceptionMessage;
 
     @BeforeEach
     void setUp() {
+        id = UUID.randomUUID();
+        expectedTransactionNotFoundExceptionMessage = "Transaction not found. Id used: " + id;
         transaction = new TransactionBuilder(TransactionType.PAYMENT)
-                .addId(UUID.randomUUID())
+                .addId(id)
                 .addName("Credit Card")
                 .addDescription("Credit card from NullBank")
                 .addValue(245.39)
@@ -110,5 +115,14 @@ public class TransactionServiceTest {
         Assertions.assertEquals(actualTransactionCompleteResponseDTO.amountRepeat(), transaction.getAmountRepeat());
         Assertions.assertEquals(actualTransactionCompleteResponseDTO.transactionType(), transaction.getTransactionType());
         Assertions.assertEquals(actualTransactionCompleteResponseDTO.categories().size(), transaction.getCategories().size());
+    }
+
+    @Test
+    void testFindById_GivenANotExistingId_ShouldThrowsATransactionNotFoundException() {
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        TransactionNotFoundException transactionNotFoundException = Assertions.assertThrows(TransactionNotFoundException.class, () -> transactionService.findById(id));
+
+        Assertions.assertEquals(expectedTransactionNotFoundExceptionMessage, transactionNotFoundException.getMessage());
     }
 }
