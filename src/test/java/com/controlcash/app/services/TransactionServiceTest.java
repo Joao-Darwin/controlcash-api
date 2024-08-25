@@ -173,4 +173,24 @@ public class TransactionServiceTest {
 
         Assertions.assertEquals(expectedTransactionNotFoundExceptionMessage, actualTransactionNotFoundException.getMessage());
     }
+
+    @Test
+    void testDelete_GivenAnExistingId_ShouldDeleteTransaction() {
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(transaction));
+        Mockito.doNothing().when(transactionRepository).delete(Mockito.any(Transaction.class));
+
+        Assertions.assertDoesNotThrow(() -> transactionService.delete(id));
+
+        Mockito.verify(transactionRepository, Mockito.times(1)).delete(Mockito.any(Transaction.class));
+    }
+
+    @Test
+    void testDelete_GivenANotExistingId_ShouldThrowsATransactionNotFoundException() {
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        TransactionNotFoundException actualTransactionNotFoundException = Assertions.assertThrows(TransactionNotFoundException.class, () -> transactionService.delete(id));
+
+        Mockito.verify(transactionRepository, Mockito.never()).delete(Mockito.any(Transaction.class));
+        Assertions.assertEquals(expectedTransactionNotFoundExceptionMessage, actualTransactionNotFoundException.getMessage());
+    }
 }
