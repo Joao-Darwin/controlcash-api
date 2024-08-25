@@ -6,6 +6,7 @@ import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponse
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Transaction;
+import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ public class TransactionConverterTest {
         double expectedValue = 1600.00;
         int expectedAmountRepeat = 1;
         TransactionType expectedTransactionType = TransactionType.ENTRANCE;
-        TransactionCreateRequestDTO transactionCreateRequestDTO = new TransactionCreateRequestDTO(expectedName, expectedDescription, expectedValue, expectedAmountRepeat, expectedTransactionType, List.of(new Category()));
+        TransactionCreateRequestDTO transactionCreateRequestDTO = new TransactionCreateRequestDTO(expectedName, expectedDescription, expectedValue, expectedAmountRepeat, expectedTransactionType, new User(), List.of(new Category()));
 
         Transaction transaction = TransactionConverter.convertTransactionCreateRequestDTOToTransaction(transactionCreateRequestDTO);
 
@@ -78,6 +79,7 @@ public class TransactionConverterTest {
                 .addCreatedDate(expectedCreatedDate)
                 .addValue(expectedValue)
                 .addAmountRepeat(expectedAmountRepeat)
+                .addCategories(List.of())
                 .build();
 
         TransactionCompleteResponseDTO transactionCompleteResponseDTO = TransactionConverter.convertTransactionToTransactionCompleteResponseDTO(transaction);

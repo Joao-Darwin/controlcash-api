@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,10 +33,10 @@ public class TransactionService {
         return TransactionConverter.convertTransactionToTransactionCreateResponseDTO(transaction);
     }
 
-    public List<TransactionCreateResponseDTO> findAll(Pageable pageable) {
+    public Page<TransactionCreateResponseDTO> findAll(Pageable pageable) {
         Page<Transaction> transactions = transactionRepository.findAll(pageable);
 
-        return transactions.map(TransactionConverter::convertTransactionToTransactionCreateResponseDTO).toList();
+        return transactions.map(TransactionConverter::convertTransactionToTransactionCreateResponseDTO);
     }
 
     public TransactionCompleteResponseDTO findById(UUID id) {
@@ -55,5 +54,26 @@ public class TransactionService {
         }
 
         return transactionOptional.get();
+    }
+
+    public TransactionCreateResponseDTO update(TransactionCreateRequestDTO transactionCreateRequestDTO, UUID id) {
+        Transaction transaction = findTransactionByIdAndVerifyIfExists(id);
+
+        transaction.setValue(transactionCreateRequestDTO.value());
+        transaction.setName(transactionCreateRequestDTO.name());
+        transaction.setTransactionType(transactionCreateRequestDTO.transactionType());
+        transaction.setDescription(transactionCreateRequestDTO.description());
+        transaction.setAmountRepeat(transactionCreateRequestDTO.amountRepeat());
+        transaction.setCategories(transactionCreateRequestDTO.categories());
+
+        transaction = transactionRepository.save(transaction);
+
+        return TransactionConverter.convertTransactionToTransactionCreateResponseDTO(transaction);
+    }
+
+    public void delete(UUID id) {
+        Transaction transaction = findTransactionByIdAndVerifyIfExists(id);
+
+        transactionRepository.delete(transaction);
     }
 }
