@@ -55,4 +55,19 @@ public class TransactionService {
 
         return transactionOptional.get();
     }
+
+    public TransactionCreateResponseDTO update(TransactionCreateRequestDTO transactionCreateRequestDTO, UUID id) {
+        Transaction transaction = findTransactionByIdAndVerifyIfExists(id);
+
+        transaction.setValue(transactionCreateRequestDTO.value());
+        transaction.setName(transactionCreateRequestDTO.name());
+        transaction.setTransactionType(transactionCreateRequestDTO.transactionType());
+        transaction.setDescription(transactionCreateRequestDTO.description());
+        transaction.setAmountRepeat(transactionCreateRequestDTO.amountRepeat());
+        transaction.setCategories(transactionCreateRequestDTO.categories());
+
+        transaction = transactionRepository.save(transaction);
+
+        return TransactionConverter.convertTransactionToTransactionCreateResponseDTO(transaction);
+    }
 }
