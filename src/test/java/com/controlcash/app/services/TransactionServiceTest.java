@@ -125,4 +125,52 @@ public class TransactionServiceTest {
 
         Assertions.assertEquals(expectedTransactionNotFoundExceptionMessage, transactionNotFoundException.getMessage());
     }
+
+    @Test
+    void testUpdate_GivenAValidIdAndTransactionCreateRequestDTO_ShouldReturnATransactionCreateResponseDTO() {
+        TransactionCreateRequestDTO transactionUpdate = new TransactionCreateRequestDTO(
+                "Other count",
+                "",
+                345.12,
+                0,
+                TransactionType.PAYMENT,
+                new User(),
+                List.of());
+        Transaction transactionUpdated = new TransactionBuilder(TransactionType.PAYMENT)
+                .addId(id)
+                .addName("Other count")
+                .addDescription("")
+                .addValue(345.12)
+                .addAmountRepeat(0)
+                .addCreatedDate(new Date())
+                .addUser(new User())
+                .addCategories(List.of())
+                .build();
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(transaction));
+        Mockito.when(transactionRepository.save(Mockito.any(Transaction.class))).thenReturn(transactionUpdated);
+
+        TransactionCreateResponseDTO actualTransactionCreateResponseDTO = Assertions.assertDoesNotThrow(() -> transactionService.update(transactionUpdate, id));
+
+        Assertions.assertNotNull(actualTransactionCreateResponseDTO);
+        Assertions.assertEquals(transaction.getId(), actualTransactionCreateResponseDTO.id());
+        Assertions.assertEquals(transactionUpdate.name(), actualTransactionCreateResponseDTO.name());
+        Assertions.assertEquals(transactionUpdate.description(), actualTransactionCreateResponseDTO.description());
+    }
+
+    @Test
+    void testUpdate_GivenANotValidId_ShouldThrowsATransactionNotFoundException() {
+        TransactionCreateRequestDTO transactionUpdate = new TransactionCreateRequestDTO(
+                "Other count",
+                "",
+                345.12,
+                0,
+                TransactionType.PAYMENT,
+                new User(),
+                List.of());
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        TransactionNotFoundException actualTransactionNotFoundException = Assertions.assertThrows(TransactionNotFoundException.class, () -> transactionService.update(transactionUpdate, id));
+
+        Assertions.assertEquals(expectedTransactionNotFoundExceptionMessage, actualTransactionNotFoundException.getMessage());
+    }
 }
