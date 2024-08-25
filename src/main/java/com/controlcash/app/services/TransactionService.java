@@ -70,4 +70,10 @@ public class TransactionService {
 
         return TransactionConverter.convertTransactionToTransactionCreateResponseDTO(transaction);
     }
+
+    public void delete(UUID id) {
+        Transaction transaction = findTransactionByIdAndVerifyIfExists(id);
+
+        transactionRepository.delete(transaction);
+    }
 }
