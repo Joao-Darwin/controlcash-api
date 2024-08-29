@@ -1,5 +1,6 @@
 package com.controlcash.app.builder;
 
+import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
@@ -67,4 +68,15 @@ public class TransactionBuilderTest {
         Assertions.assertNull(transaction.getUser());
         Assertions.assertTrue(transaction.getCategories().isEmpty());
     }
+
+    @Test
+    void testTransactionBuilder_ImmutableTransaction_ShouldThrowExceptionOnModification() {
+        TransactionBuilder transactionBuilder = new TransactionBuilder(TransactionType.PAYMENT);
+        Transaction transaction = transactionBuilder.build();
+
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            transaction.getCategories().add(new Category());
+        });
+    }
+
 }
