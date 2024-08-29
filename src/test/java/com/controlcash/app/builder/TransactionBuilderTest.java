@@ -4,12 +4,15 @@ import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class TransactionBuilderTest {
 
     @Test
@@ -42,5 +45,26 @@ public class TransactionBuilderTest {
         Assertions.assertEquals(expectedValue, transaction.getValue());
         Assertions.assertEquals(expectedCreatedDate, transaction.getCreatedDate());
         Assertions.assertEquals(expectedId, transaction.getId());
+    }
+
+    @Test
+    void testTransactionBuilder_PartialParams_ShouldReturnTransactionWithDefaultValues() {
+        TransactionType expectedTransactionType = TransactionType.PAYMENT;
+        String expectedName = "God of War";
+        TransactionBuilder transactionBuilder = new TransactionBuilder(expectedTransactionType);
+
+        Transaction transaction = transactionBuilder
+                .addName(expectedName)
+                .build();
+
+        Assertions.assertNotNull(transaction);
+        Assertions.assertEquals(expectedTransactionType, transaction.getTransactionType());
+        Assertions.assertEquals(expectedName, transaction.getName());
+        Assertions.assertNull(transaction.getDescription());
+        Assertions.assertNull(transaction.getCreatedDate());
+        Assertions.assertNull(transaction.getId());
+        Assertions.assertNull(transaction.getValue());
+        Assertions.assertNull(transaction.getUser());
+        Assertions.assertTrue(transaction.getCategories().isEmpty());
     }
 }
