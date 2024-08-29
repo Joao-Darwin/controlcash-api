@@ -15,6 +15,7 @@ public class TransactionBuilder {
     public TransactionBuilder(TransactionType transactionType) {
         transaction = new Transaction();
         transaction.setTransactionType(transactionType);
+        transaction.setCategories(List.of());
     }
 
     public TransactionBuilder addId(UUID id) {
