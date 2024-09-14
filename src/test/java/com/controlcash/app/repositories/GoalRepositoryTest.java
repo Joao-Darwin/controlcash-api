@@ -25,7 +25,8 @@ public class GoalRepositoryTest {
 
     @Autowired
     private GoalRepository goalRepository;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private EntityManager entityManager;
 
@@ -47,6 +48,7 @@ public class GoalRepositoryTest {
         user.setFullName("User");
         user.setSalary(1500.00);
         user.setPassword("password");
+        userRepository.save(user);
     }
 
     @Test
