@@ -34,10 +34,10 @@ public class Transaction implements Serializable {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "transaction_category", joinColumns = {@JoinColumn(name = "transaction_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
 

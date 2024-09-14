@@ -28,6 +28,8 @@ public class TransactionRepositoryTest {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     private Transaction transaction;
     private User user;
@@ -43,6 +45,7 @@ public class TransactionRepositoryTest {
         user.setFullName("User");
         user.setSalary(1500.00);
         user.setPassword("password");
+        userRepository.save(user);
 
         transaction = new Transaction();
         transaction.setName("Game purchase");
