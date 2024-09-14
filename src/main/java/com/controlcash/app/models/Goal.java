@@ -23,10 +23,10 @@ public class Goal implements Serializable {
     @Column(name = "goal_value", nullable = false, columnDefinition = "FLOAT CHECK (goal_value > 0)")
     private Double value;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
     public Goal() {}
