@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +42,7 @@ public class TransactionConverterTest {
         UUID expectedId = UUID.randomUUID();
         String expectedName = "Month Salary";
         String expectedDescription = "my month salary from job";
-        Date expectedCreatedDate = new Date();
+        LocalDate expectedCreatedDate = LocalDate.now();
         double expectedValue = 1600.00;
         int expectedAmountRepeat = 1;
         TransactionType expectedTransactionType = TransactionType.ENTRANCE;
@@ -68,7 +68,7 @@ public class TransactionConverterTest {
         UUID expectedId = UUID.randomUUID();
         String expectedName = "Month Salary";
         String expectedDescription = "my month salary from job";
-        Date expectedCreatedDate = new Date();
+        LocalDate expectedCreatedDate = LocalDate.now();
         double expectedValue = 1600.00;
         int expectedAmountRepeat = 1;
         TransactionType expectedTransactionType = TransactionType.ENTRANCE;

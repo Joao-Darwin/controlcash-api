@@ -3,7 +3,6 @@ package com.controlcash.app.repositories;
 import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
-import com.controlcash.app.utils.dates.DateFormatUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,11 +32,9 @@ public class TransactionRepositoryTest {
 
     private Transaction transaction;
     private User user;
-    private DateFormatUtils dateFormatUtils;
 
     @BeforeEach
-    void setUp() throws ParseException {
-        dateFormatUtils = DateFormatUtils.getInstance();
+    void setUp() {
 
         user = new User();
         user.setUserName("user123");
@@ -49,7 +46,7 @@ public class TransactionRepositoryTest {
 
         transaction = new Transaction();
         transaction.setName("Game purchase");
-        transaction.setCreatedDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        transaction.setCreatedDate(LocalDate.parse("2024-07-19"));
         transaction.setValue(250.00);
         transaction.setAmountRepeat(5);
         transaction.setTransactionType(TransactionType.PAYMENT);
@@ -139,13 +136,13 @@ public class TransactionRepositoryTest {
     }
 
     @Test
-    void testFindAll_ShouldReturnATransactionList() throws ParseException {
+    void testFindAll_ShouldReturnATransactionList() {
         transactionRepository.save(transaction);
         transaction = new Transaction();
         transaction.setName("Freelancer");
         transaction.setValue(2500.00);
         transaction.setTransactionType(TransactionType.ENTRANCE);
-        transaction.setCreatedDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        transaction.setCreatedDate(LocalDate.parse("2024-07-19"));
         transaction.setAmountRepeat(5);
         transaction.setUser(user);
         transactionRepository.save(transaction);
@@ -157,13 +154,13 @@ public class TransactionRepositoryTest {
     }
 
     @Test
-    void testFindAll_GivenAPageable_ShouldReturnATransactionPage() throws ParseException {
+    void testFindAll_GivenAPageable_ShouldReturnATransactionPage() {
         transactionRepository.save(transaction);
         transaction = new Transaction();
         transaction.setName("Freelancer");
         transaction.setValue(2500.00);
         transaction.setTransactionType(TransactionType.ENTRANCE);
-        transaction.setCreatedDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        transaction.setCreatedDate(LocalDate.parse("2024-09-17"));
         transaction.setAmountRepeat(5);
         transaction.setUser(user);
         transactionRepository.save(transaction);

@@ -25,7 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,7 +54,7 @@ public class TransactionServiceTest {
                 .addDescription("Credit card from NullBank")
                 .addValue(245.39)
                 .addAmountRepeat(0)
-                .addCreatedDate(new Date())
+                .addCreatedDate(LocalDate.now())
                 .addCategories(List.of())
                 .build();
     }
@@ -89,7 +89,7 @@ public class TransactionServiceTest {
                 .addDescription("My salary from job")
                 .addValue(1459.99)
                 .addAmountRepeat(0)
-                .addCreatedDate(new Date())
+                .addCreatedDate(LocalDate.now())
                 .build();
         Page<Transaction> transactionPage = new PageImpl<>(List.of(transaction, transaction2));
         Mockito.when(transactionRepository.findAll(Mockito.any(Pageable.class))).thenReturn(transactionPage);
@@ -142,7 +142,7 @@ public class TransactionServiceTest {
                 .addDescription("")
                 .addValue(345.12)
                 .addAmountRepeat(0)
-                .addCreatedDate(new Date())
+                .addCreatedDate(LocalDate.now())
                 .addUser(new User())
                 .addCategories(List.of())
                 .build();
