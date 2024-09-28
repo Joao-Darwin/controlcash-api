@@ -1,17 +1,22 @@
 package com.controlcash.app.utils.dates;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DateFormatUtils {
 
     private static DateFormatUtils dateFormatUtils;
 
-    private final SimpleDateFormat simpleDateFormat;
+    private final List<DateTimeFormatter> formatters;
 
-    private DateFormatUtils () {
-        simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private DateFormatUtils() {
+        formatters = new ArrayList<>();
+        formatters.add(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        formatters.add(DateTimeFormatter.ofPattern("dd/MM/yy"));
+        formatters.add(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss:S"));
     }
 
     public static DateFormatUtils getInstance() {
@@ -20,11 +25,13 @@ public class DateFormatUtils {
         return dateFormatUtils;
     }
 
-    public SimpleDateFormat getSimpleDateFormat() {
-        return this.simpleDateFormat;
-    }
+    public LocalDate convertStringToDate(String stringDate) {
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDate.parse(stringDate, formatter);
+            } catch (DateTimeParseException ignored) {}
+        }
 
-    public Date convertStringToDate(String stringDate) throws ParseException {
-        return simpleDateFormat.parse(stringDate);
+        throw new DateTimeParseException("Invalid date format: " + stringDate, stringDate, 0);
     }
 }
