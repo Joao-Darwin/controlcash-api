@@ -1,7 +1,7 @@
 package com.controlcash.app.dtos.goal.response;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
-public record GoalSimpleResponseDTO(UUID id, Date dueDate, Double value) {
+public record GoalSimpleResponseDTO(UUID id, LocalDate dueDate, Double value) {
 }
