@@ -2,7 +2,6 @@ package com.controlcash.app.repositories;
 
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
-import com.controlcash.app.utils.dates.DateFormatUtils;
 import jakarta.persistence.EntityManager;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,14 +31,11 @@ public class GoalRepositoryTest {
 
     private Goal goal;
     private User user;
-    private DateFormatUtils dateFormatUtils;
 
     @BeforeEach
-    void setUp() throws ParseException {
-        dateFormatUtils = DateFormatUtils.getInstance();
-
+    void setUp() {
         goal = new Goal();
-        goal.setDueDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        goal.setDueDate(LocalDate.parse("2024-07-19"));
         goal.setValue(1500.00);
 
         user = new User();
@@ -99,11 +95,11 @@ public class GoalRepositoryTest {
     }
 
     @Test
-    void testFindAll_ShouldReturnAListWithAllGoals() throws ParseException {
+    void testFindAll_ShouldReturnAListWithAllGoals() {
         goal.setUser(user);
         goalRepository.save(goal);
         goal = new Goal();
-        goal.setDueDate(dateFormatUtils.convertStringToDate("19/07/2024"));
+        goal.setDueDate(LocalDate.parse("2024-07-19"));
         goal.setValue(250.0);
         goal.setUser(user);
         goalRepository.save(goal);
