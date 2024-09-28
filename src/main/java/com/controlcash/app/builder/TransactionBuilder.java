@@ -5,7 +5,7 @@ import com.controlcash.app.models.Transaction;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +33,7 @@ public class TransactionBuilder {
         return this;
     }
 
-    public TransactionBuilder addCreatedDate(Date createdDate) {
+    public TransactionBuilder addCreatedDate(LocalDate createdDate) {
         transaction.setCreatedDate(createdDate);
         return this;
     }

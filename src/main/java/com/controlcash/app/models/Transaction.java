@@ -1,12 +1,24 @@
 package com.controlcash.app.models;
 
 import com.controlcash.app.models.enums.TransactionType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +37,7 @@ public class Transaction implements Serializable {
     private String description;
     @Column(nullable = false)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date createdDate;
+    private LocalDate createdDate;
     @Column(name = "transaction_value", nullable = false, columnDefinition = "FLOAT CHECK (transaction_value > 0)")
     private Double value;
     @Column(nullable = false, columnDefinition = "INT CHECK (amount_repeat >= 0)")
@@ -68,11 +80,11 @@ public class Transaction implements Serializable {
         this.description = description;
     }
 
-    public Date getCreatedDate() {
+    public LocalDate getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDate createdDate) {
         this.createdDate = createdDate;
     }
 
