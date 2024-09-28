@@ -9,7 +9,6 @@ import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Goal;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.GoalRepository;
-import com.controlcash.app.utils.dates.DateFormatUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -26,8 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,16 +40,14 @@ public class GoalServiceTest {
     @InjectMocks
     private GoalService goalService;
 
-    private DateFormatUtils dateFormatUtils;
     private Goal goal;
     private GoalCreateRequestDTO goalCreateRequestDTO;
     private String goalNotFoundExceptionMessage;
     private UUID id;
 
     @BeforeEach
-    void setUp() throws ParseException {
-        dateFormatUtils = DateFormatUtils.getInstance();
-        Date dueDate = dateFormatUtils.convertStringToDate("01/08/2024");
+    void setUp() {
+        LocalDate dueDate = LocalDate.parse("2024-08-01");
 
         id = UUID.randomUUID();
         goal = new Goal(id, dueDate, 2500.0, new User(), new Category());
@@ -73,9 +69,10 @@ public class GoalServiceTest {
     }
 
     @Test
-    void testFindAll_GivenAPageable_ShouldReturnAGoalSimpleResponseDTOPage() throws ParseException {
+    void testFindAll_GivenAPageable_ShouldReturnAGoalSimpleResponseDTOPage() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dueDate"));
-        Goal goal2 = new Goal(UUID.randomUUID(), dateFormatUtils.convertStringToDate("01/09/2024"), 2400.0, new User(), new Category());
+        LocalDate dueDate = LocalDate.parse("2024-09-01");
+        Goal goal2 = new Goal(UUID.randomUUID(), dueDate, 2400.0, new User(), new Category());
         List<Goal> goalList = List.of(goal, goal2);
         Page<Goal> goalPage = new PageImpl<>(goalList);
         Mockito.when(goalRepository.findAll(Mockito.any(Pageable.class))).thenReturn(goalPage);
@@ -120,9 +117,9 @@ public class GoalServiceTest {
     }
 
     @Test
-    void testUpdate_GivenAGoalCreateRequestDTOAndValidId_ShouldReturnAGoalCompleteResponseDTOUpdated() throws ParseException {
+    void testUpdate_GivenAGoalCreateRequestDTOAndValidId_ShouldReturnAGoalCompleteResponseDTOUpdated() {
         Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(goal));
-        Date newDueDate = dateFormatUtils.convertStringToDate("04/08/2025");
+        LocalDate newDueDate = LocalDate.parse("2025-08-04");
         Double newValue = 2900.0;
         GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(newDueDate, newValue, new Category());
         Goal goalUpdated = new Goal(id, newDueDate, newValue, goal.getUser(), goalUpdateRequestDTO.category());
@@ -138,8 +135,8 @@ public class GoalServiceTest {
     }
 
     @Test
-    void testUpdate_GivenANotValidId_ShouldThrowsAGoalNotFoundException() throws ParseException {
-        Date newDueDate = dateFormatUtils.convertStringToDate("04/08/2025");
+    void testUpdate_GivenANotValidId_ShouldThrowsAGoalNotFoundException() {
+        LocalDate newDueDate = LocalDate.parse("2025-08-04");
         Double newValue = 2900.0;
         GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(newDueDate, newValue, new Category());
         Mockito.when(goalRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());

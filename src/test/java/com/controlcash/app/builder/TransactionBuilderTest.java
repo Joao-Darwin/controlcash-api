@@ -9,7 +9,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class TransactionBuilderTest {
         String expectedDescription = "I get God of War in promotion on Steam";
         String expectedName = "God of War";
         Double expectedValue = 59.99;
-        Date expectedCreatedDate = new Date();
+        LocalDate expectedCreatedDate = LocalDate.now();
         UUID expectedId = UUID.randomUUID();
         TransactionBuilder transactionBuilder = new TransactionBuilder(expectedTransactionType);
 

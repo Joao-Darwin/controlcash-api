@@ -2,6 +2,6 @@ package com.controlcash.app.dtos.goal.request;
 
 import com.controlcash.app.models.Category;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public record GoalUpdateRequestDTO (Date dueDate, Double value, Category category) {}
+public record GoalUpdateRequestDTO (LocalDate dueDate, Double value, Category category) {}

@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -20,7 +19,7 @@ public class GoalConverterTest {
     @Test
     public void testConvertGoalCreateRequestDTOToGoal_ShouldReturnGoal() {
         GoalCreateRequestDTO expectedGoalCreateRequestDTO = new GoalCreateRequestDTO(
-                Date.from(Instant.now()),
+                LocalDate.now(),
                 1000.0,
                 new User(),
                 new Category()
@@ -37,7 +36,7 @@ public class GoalConverterTest {
     @Test
     public void testConvertGoalToGoalCompleteResponseDTO_ShouldReturnGoalCompleteResponseDTO() {
         UUID expectedId = UUID.randomUUID();
-        Date expectedDueDate = Date.from(Instant.now());
+        LocalDate expectedDueDate = LocalDate.now();
         Double expectedValue = 1250.00;
         User expectedUser = new User();
         Category expectedCategory = new Category();
@@ -55,7 +54,7 @@ public class GoalConverterTest {
     @Test
     public void testConvertGoalToGoalSimpleResponseDTO_ShouldReturnGoalSimpleResponseDTO() {
         UUID expectedId = UUID.randomUUID();
-        Date expectedDueDate = Date.from(Instant.now());
+        LocalDate expectedDueDate = LocalDate.now();
         Double expectedValue = 1250.00;
         User expectedUser = new User();
         Category expectedCategory = new Category();

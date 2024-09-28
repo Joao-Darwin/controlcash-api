@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class DateFormatUtilsTest {
 
@@ -19,14 +18,6 @@ public class DateFormatUtilsTest {
         this.dateFormatUtils = DateFormatUtils.getInstance();
     }
 
-    @Test
-    void testGetSimpleDateFormat_ShouldReturnDefaultSimpleDateFormat() {
-        SimpleDateFormat simpleDateFormat = dateFormatUtils.getSimpleDateFormat();
-
-        Assertions.assertNotNull(simpleDateFormat);
-        Assertions.assertEquals("dd/MM/yyyy", simpleDateFormat.toPattern());
-    }
-
     @ParameterizedTest
     @CsvSource({
             "19/07/2024",
@@ -34,7 +25,7 @@ public class DateFormatUtilsTest {
             "19/07/2024 00:00:00:0"
     })
     void testConvertStringToDate_GivenAValidString_ShouldReturnDateBasedOnString(String stringDate) {
-        Date actualDate = Assertions.assertDoesNotThrow(() -> dateFormatUtils.convertStringToDate(stringDate));
+        LocalDate actualDate = Assertions.assertDoesNotThrow(() -> dateFormatUtils.convertStringToDate(stringDate));
 
         Assertions.assertNotNull(actualDate);
     }
@@ -44,7 +35,19 @@ public class DateFormatUtilsTest {
             "19/07",
             "07/2024",
     })
-    void testConvertStringToDate_GivenANotValidString_ShouldThrowsAParseException(String stringDate) {
-        Assertions.assertThrows(ParseException.class, () -> dateFormatUtils.convertStringToDate(stringDate));
+    void testConvertStringToDate_GivenANotValidString_ShouldThrowsADateTimeParseException(String stringDate) {
+        String expectedExceptionMessage = "Invalid date format: " + stringDate;
+
+        DateTimeParseException dateTimeParseException = Assertions.assertThrows(DateTimeParseException.class, () -> dateFormatUtils.convertStringToDate(stringDate));
+
+        Assertions.assertEquals(expectedExceptionMessage, dateTimeParseException.getMessage());
+    }
+
+    @Test
+    void testGetInstance_ShouldReturnTheSameInstance() {
+        DateFormatUtils firstInstance = DateFormatUtils.getInstance();
+        DateFormatUtils secondInstance = DateFormatUtils.getInstance();
+
+        Assertions.assertEquals(firstInstance, secondInstance);
     }
 }

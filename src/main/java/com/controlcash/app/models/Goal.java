@@ -1,11 +1,17 @@
 package com.controlcash.app.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -19,7 +25,7 @@ public class Goal implements Serializable {
     private UUID id;
     @Column(nullable = false)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date dueDate;
+    private LocalDate dueDate;
     @Column(name = "goal_value", nullable = false, columnDefinition = "FLOAT CHECK (goal_value > 0)")
     private Double value;
 
@@ -31,7 +37,7 @@ public class Goal implements Serializable {
 
     public Goal() {}
 
-    public Goal(UUID id, Date dueDate, Double value, User user, Category category) {
+    public Goal(UUID id, LocalDate dueDate, Double value, User user, Category category) {
         this.id = id;
         this.dueDate = dueDate;
         this.value = value;
@@ -43,11 +49,11 @@ public class Goal implements Serializable {
         return this.id;
     }
 
-    public Date getDueDate() {
+    public LocalDate getDueDate() {
         return this.dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 
