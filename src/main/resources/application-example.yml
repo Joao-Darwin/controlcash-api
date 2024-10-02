@@ -1,3 +1,5 @@
+cors:
+  origins:
 path-api: "/api"
 spring:
   datasource:
