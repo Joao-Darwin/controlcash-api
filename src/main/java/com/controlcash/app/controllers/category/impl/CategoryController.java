@@ -3,6 +3,8 @@ package com.controlcash.app.controllers.category.impl;
 import com.controlcash.app.controllers.category.ICategoryController;
 import com.controlcash.app.dtos.category.request.CategoryRequestDTO;
 import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
+import com.controlcash.app.exceptions.CategoryNotFoundException;
+import com.controlcash.app.exceptions.ResponseEntityException;
 import com.controlcash.app.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,10 +14,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("${path-api}/categories")
@@ -51,5 +57,17 @@ public class CategoryController implements ICategoryController {
         Page<CategoryResponseDTO> categoryResponseDTOPage = categoryService.findAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTOPage);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable UUID id) {
+        try {
+            CategoryResponseDTO categoryResponseDTO =  categoryService.findById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
+        } catch (CategoryNotFoundException categoryNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), categoryNotFoundException.getMessage(), "");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
     }
 }
