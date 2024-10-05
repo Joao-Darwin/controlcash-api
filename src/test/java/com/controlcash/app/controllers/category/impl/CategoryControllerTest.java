@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,5 +62,28 @@ public class CategoryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Electronics"));
+    }
+
+    @Test
+    void testFindAll_GivenRequestParamsToPagination_ShouldReturnAPageWithCategoryResponseDTOList() throws Exception {
+        CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
+        CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "House");
+        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
+        Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories")
+                .queryParam("page", "0")
+                .queryParam("size", "5")
+                .queryParam("sort", "asc"));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.first").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.last").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Electronics"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value("House"));
     }
 }
