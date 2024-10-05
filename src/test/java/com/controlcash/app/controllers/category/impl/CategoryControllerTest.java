@@ -2,6 +2,7 @@ package com.controlcash.app.controllers.category.impl;
 
 import com.controlcash.app.dtos.category.request.CategoryRequestDTO;
 import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
+import com.controlcash.app.exceptions.CategoryNotFoundException;
 import com.controlcash.app.services.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,7 +109,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    void testFindByIdGivenAValidId_ShouldReturnACategoryResponseDTO() throws Exception {
+    void testFindById_GivenAValidId_ShouldReturnACategoryResponseDTO() throws Exception {
         Mockito.when(categoryService.findById(Mockito.any(UUID.class))).thenReturn(categoryResponseDTO);
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/" + UUID.randomUUID()));
@@ -118,5 +119,19 @@ public class CategoryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Electronics"));
+    }
+
+    @Test
+    void testFindById_GivenAnInvalidId_ShouldReturnABadRequestError() throws Exception {
+        UUID id = UUID.randomUUID();
+        String exceptionMessage = "Category not found. Id used: " + id;
+        Mockito.when(categoryService.findById(Mockito.any(UUID.class))).thenThrow(new CategoryNotFoundException(exceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(exceptionMessage));
     }
 }
