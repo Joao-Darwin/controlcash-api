@@ -106,4 +106,17 @@ public class CategoryControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Electronics"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value("House"));
     }
+
+    @Test
+    void testFindByIdGivenAValidId_ShouldReturnACategoryResponseDTO() throws Exception {
+        Mockito.when(categoryService.findById(Mockito.any(UUID.class))).thenReturn(categoryResponseDTO);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/" + UUID.randomUUID()));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Electronics"));
+    }
 }
