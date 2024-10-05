@@ -6,4 +6,5 @@ import org.springframework.http.ResponseEntity;
 public interface ICategoryController {
 
     ResponseEntity<?> create(CategoryRequestDTO categoryRequestDTO);
+    ResponseEntity<?> findAll(int page, int size, String sort);
 }
