@@ -134,4 +134,39 @@ public class CategoryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(exceptionMessage));
     }
+
+    @Test
+    void testUpdate_GivenAValidIdAndACategoryRequestDTO_ShouldReturnAOkAndACategoryResponseDTOUpdated() throws Exception {
+        UUID id = UUID.randomUUID();
+        categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
+        categoryResponseDTO = new CategoryResponseDTO(id, "Games");
+        Mockito.when(categoryService.update(Mockito.any(CategoryRequestDTO.class), Mockito.any(UUID.class))).thenReturn(categoryResponseDTO);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/categories/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(categoryRequestDTO.name()));
+    }
+
+    @Test
+    void testUpdate_GivenAnInvalidId_ShouldReturnABadRequestError() throws Exception {
+        UUID id = UUID.randomUUID();
+        String exceptionMessage = "Category not found. Id used: " + id;
+        categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
+        Mockito.when(categoryService.update(Mockito.any(CategoryRequestDTO.class), Mockito.any(UUID.class))).thenThrow(new CategoryNotFoundException(exceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/categories/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(exceptionMessage));
+    }
 }
