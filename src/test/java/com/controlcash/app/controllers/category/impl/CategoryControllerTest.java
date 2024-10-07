@@ -102,6 +102,29 @@ public class CategoryControllerTest {
     }
 
     @Test
+    void testFindAll_GivenRequestParamsToPaginationWithSortDesc_ShouldReturnAPageWithCategoryResponseDTOList() throws Exception {
+        CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "House");
+        CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
+        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
+        Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories")
+                .queryParam("page", "0")
+                .queryParam("size", "5")
+                .queryParam("sort", "desc"));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.first").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.last").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("House"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value("Electronics"));
+    }
+
+    @Test
     void testFindAll_GivenNoParams_ShouldReturnADefaultPageWithCategoryResponseDTOList() throws Exception {
         CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
         CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "House");
