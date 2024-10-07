@@ -147,7 +147,7 @@ public class CategoryControllerTest {
     void testFindById_GivenAValidId_ShouldReturnACategoryResponseDTO() throws Exception {
         Mockito.when(categoryService.findById(Mockito.any(UUID.class))).thenReturn(categoryResponseDTO);
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/" + UUID.randomUUID()));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT + "/" + UUID.randomUUID()));
 
         response
                 .andDo(MockMvcResultHandlers.print())
@@ -162,7 +162,7 @@ public class CategoryControllerTest {
         String exceptionMessage = "Category not found. Id used: " + id;
         Mockito.when(categoryService.findById(Mockito.any(UUID.class))).thenThrow(new CategoryNotFoundException(exceptionMessage));
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/" + id));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT + "/" + id));
 
         response
                 .andDo(MockMvcResultHandlers.print())
@@ -177,7 +177,7 @@ public class CategoryControllerTest {
         categoryResponseDTO = new CategoryResponseDTO(id, "Games");
         Mockito.when(categoryService.update(Mockito.any(CategoryRequestDTO.class), Mockito.any(UUID.class))).thenReturn(categoryResponseDTO);
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/categories/" + id)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(CATEGORY_BASE_ENDPOINT + "/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDTO)));
 
@@ -195,7 +195,7 @@ public class CategoryControllerTest {
         categoryRequestDTO = new CategoryRequestDTO("Games", List.of(), List.of());
         Mockito.when(categoryService.update(Mockito.any(CategoryRequestDTO.class), Mockito.any(UUID.class))).thenThrow(new CategoryNotFoundException(exceptionMessage));
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/categories/" + id)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(CATEGORY_BASE_ENDPOINT + "/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDTO)));
 
@@ -210,7 +210,7 @@ public class CategoryControllerTest {
         UUID id = UUID.randomUUID();
         Mockito.doNothing().when(categoryService).delete(Mockito.any(UUID.class));
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/categories/" + id));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(CATEGORY_BASE_ENDPOINT + "/" + id));
 
         response
                 .andDo(MockMvcResultHandlers.print())
@@ -223,7 +223,7 @@ public class CategoryControllerTest {
         String exceptionMessage = "Category not found. Id used: " + id;
         Mockito.doThrow(new CategoryNotFoundException(exceptionMessage)).when(categoryService).delete(Mockito.any(UUID.class));
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/categories/" + id));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(CATEGORY_BASE_ENDPOINT + "/" + id));
 
         response
                 .andDo(MockMvcResultHandlers.print())
