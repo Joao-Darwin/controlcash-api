@@ -39,13 +39,9 @@ public class CategoryController implements ICategoryController {
 
     @PostMapping
     public ResponseEntity<?> create(CategoryRequestDTO categoryRequestDTO) {
-        try {
-            CategoryResponseDTO categoryResponseDTO = categoryService.create(categoryRequestDTO);
+        CategoryResponseDTO categoryResponseDTO = categoryService.create(categoryRequestDTO);
 
-            return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
-        } catch (Exception exception) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
     }
 
     @GetMapping
@@ -65,7 +61,7 @@ public class CategoryController implements ICategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
-            CategoryResponseDTO categoryResponseDTO =  categoryService.findById(id);
+            CategoryResponseDTO categoryResponseDTO = categoryService.findById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
         } catch (CategoryNotFoundException categoryNotFoundException) {
