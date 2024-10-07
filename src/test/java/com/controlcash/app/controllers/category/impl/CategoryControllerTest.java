@@ -33,6 +33,8 @@ import java.util.UUID;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class CategoryControllerTest {
 
+    private static final String CATEGORY_BASE_ENDPOINT = "/api/categories";
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -54,7 +56,7 @@ public class CategoryControllerTest {
     void testCreate_GivenACategoryRequestDTOOnBody_ShouldReturnCategoryResponseDTO() throws Exception {
         Mockito.when(categoryService.create(Mockito.any(CategoryRequestDTO.class))).thenReturn(categoryResponseDTO);
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/categories")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(CATEGORY_BASE_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDTO)));
 
@@ -69,7 +71,7 @@ public class CategoryControllerTest {
     void testCreate_WhenIsThrowsAnException_ShouldReturnABadRequest() throws Exception {
         Mockito.when(categoryService.create(Mockito.any(CategoryRequestDTO.class))).thenThrow(new RuntimeException("Exception message"));
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/categories")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(CATEGORY_BASE_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequestDTO)));
 
@@ -85,7 +87,7 @@ public class CategoryControllerTest {
         Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
         Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT)
                 .queryParam("page", "0")
                 .queryParam("size", "5")
                 .queryParam("sort", "asc"));
@@ -108,7 +110,7 @@ public class CategoryControllerTest {
         Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
         Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT)
                 .queryParam("page", "0")
                 .queryParam("size", "5")
                 .queryParam("sort", "desc"));
@@ -131,7 +133,7 @@ public class CategoryControllerTest {
         Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
         Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/categories"));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT));
 
         response
                 .andDo(MockMvcResultHandlers.print())
