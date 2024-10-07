@@ -169,4 +169,30 @@ public class CategoryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(exceptionMessage));
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldReturnAnOk() throws Exception {
+        UUID id = UUID.randomUUID();
+        Mockito.doNothing().when(categoryService).delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/categories/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(200));
+    }
+
+    @Test
+    void testDelete_GivenAnInvalidId_ShouldReturnAnBadRequest() throws Exception {
+        UUID id = UUID.randomUUID();
+        String exceptionMessage = "Category not found. Id used: " + id;
+        Mockito.doThrow(new CategoryNotFoundException(exceptionMessage)).when(categoryService).delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/categories/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(exceptionMessage));
+    }
 }
