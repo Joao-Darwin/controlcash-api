@@ -66,6 +66,19 @@ public class CategoryControllerTest {
     }
 
     @Test
+    void testCreate_WhenIsThrowsAnException_ShouldReturnABadRequest() throws Exception {
+        Mockito.when(categoryService.create(Mockito.any(CategoryRequestDTO.class))).thenThrow(new RuntimeException("Exception message"));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/categories")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+    }
+
+    @Test
     void testFindAll_GivenRequestParamsToPagination_ShouldReturnAPageWithCategoryResponseDTOList() throws Exception {
         CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
         CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "House");
