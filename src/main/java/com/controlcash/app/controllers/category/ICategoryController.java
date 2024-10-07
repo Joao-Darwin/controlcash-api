@@ -11,4 +11,5 @@ public interface ICategoryController {
     ResponseEntity<?> findAll(int page, int size, String sort);
     ResponseEntity<?> findById(UUID id);
     ResponseEntity<?> update(CategoryRequestDTO categoryRequestDTO, UUID id);
+    ResponseEntity<?> delete(UUID id);
 }
