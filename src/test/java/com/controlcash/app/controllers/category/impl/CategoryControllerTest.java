@@ -82,9 +82,8 @@ public class CategoryControllerTest {
 
     @Test
     void testFindAll_GivenRequestParamsToPagination_ShouldReturnAPageWithCategoryResponseDTOList() throws Exception {
-        CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
         CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "House");
-        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
+        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(categoryResponseDTO, category2));
         Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT)
@@ -106,8 +105,7 @@ public class CategoryControllerTest {
     @Test
     void testFindAll_GivenRequestParamsToPaginationWithSortDesc_ShouldReturnAPageWithCategoryResponseDTOList() throws Exception {
         CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "House");
-        CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
-        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
+        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, categoryResponseDTO));
         Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT)
@@ -128,9 +126,8 @@ public class CategoryControllerTest {
 
     @Test
     void testFindAll_GivenNoParams_ShouldReturnADefaultPageWithCategoryResponseDTOList() throws Exception {
-        CategoryResponseDTO category1 = new CategoryResponseDTO(UUID.randomUUID(), "Electronics");
         CategoryResponseDTO category2 = new CategoryResponseDTO(UUID.randomUUID(), "House");
-        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(category1, category2));
+        Page<CategoryResponseDTO> page = new PageImpl<>(List.of(categoryResponseDTO, category2));
         Mockito.when(categoryService.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_BASE_ENDPOINT));
