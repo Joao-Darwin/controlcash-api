@@ -137,4 +137,20 @@ public class GoalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].value").value("1700.0"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].value").value("1500.0"));
     }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAGoalCompleteResponseDTOAndOk() throws Exception {
+        Mockito.when(goalService.findById(Mockito.any(UUID.class))).thenReturn(goalCompleteResponseDTO);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(GOAL_BASE_ENDPOINT + "/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dueDate").value(goalCompleteResponseDTO.dueDate().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(goalCompleteResponseDTO.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user.username").value(goalCompleteResponseDTO.user().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.category.name").value(goalCompleteResponseDTO.category().getName()));
+    }
 }
