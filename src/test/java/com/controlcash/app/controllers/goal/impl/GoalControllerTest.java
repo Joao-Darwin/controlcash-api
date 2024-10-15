@@ -3,6 +3,7 @@ package com.controlcash.app.controllers.goal.impl;
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
+import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.User;
 import com.controlcash.app.services.GoalService;
@@ -152,6 +153,21 @@ public class GoalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(goalCompleteResponseDTO.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user.username").value(goalCompleteResponseDTO.user().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.category.name").value(goalCompleteResponseDTO.category().getName()));
+
+        Mockito.verify(goalService, Mockito.times(1)).findById(Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldReturnBadRequest() throws Exception {
+        String expectedMessageException = "Goal not found. Id used: " + id;
+        Mockito.when(goalService.findById(Mockito.any(UUID.class))).thenThrow(new GoalNotFoundException(expectedMessageException));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(GOAL_BASE_ENDPOINT + "/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
 
         Mockito.verify(goalService, Mockito.times(1)).findById(Mockito.any(UUID.class));
     }
