@@ -152,5 +152,7 @@ public class GoalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(goalCompleteResponseDTO.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user.username").value(goalCompleteResponseDTO.user().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.category.name").value(goalCompleteResponseDTO.category().getName()));
+
+        Mockito.verify(goalService, Mockito.times(1)).findById(Mockito.any(UUID.class));
     }
 }
