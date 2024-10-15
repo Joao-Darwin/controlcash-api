@@ -4,6 +4,8 @@ import com.controlcash.app.controllers.goal.IGoalController;
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
+import com.controlcash.app.exceptions.GoalNotFoundException;
+import com.controlcash.app.exceptions.ResponseEntityException;
 import com.controlcash.app.services.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,11 +15,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("${path-api}/goals")
@@ -49,5 +55,17 @@ public class GoalController implements IGoalController {
         Page<GoalSimpleResponseDTO> goalSimpleResponseDTOPage = goalService.findAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(goalSimpleResponseDTOPage);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable UUID id) {
+        try {
+            GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.findById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
+        } catch (GoalNotFoundException goalNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), goalNotFoundException.getMessage(), "");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
     }
 }
