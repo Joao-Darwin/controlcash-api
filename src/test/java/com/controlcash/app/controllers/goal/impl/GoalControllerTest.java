@@ -176,7 +176,7 @@ public class GoalControllerTest {
     }
 
     @Test
-    void testUpdate_GivenAValidIdAndGoalUpdateRequestDTO_ShouldReturnAGoalCompleteResponseDTO() throws Exception {
+    void testUpdate_GivenAValidIdAndGoalUpdateRequestDTO_ShouldReturnAGoalCompleteResponseDTOAndOk() throws Exception {
         category = new Category(UUID.randomUUID(), "Invest", List.of(), List.of());
         GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(LocalDate.parse("2024-08-02"), 4200.0, category);
         goalCompleteResponseDTO = new GoalCompleteResponseDTO(id, LocalDate.parse("2024-08-02"), 4200.0, user, category);
@@ -194,5 +194,29 @@ public class GoalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(goalCompleteResponseDTO.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user.username").value(goalCompleteResponseDTO.user().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.category.name").value(goalCompleteResponseDTO.category().getName()));
+
+        Mockito.verify(goalService, Mockito.times(1))
+                .update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testUpdate_GivenANotValidId_ShouldReturnABadRequest() throws Exception {
+        category = new Category(UUID.randomUUID(), "Invest", List.of(), List.of());
+        GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(LocalDate.parse("2024-08-02"), 4200.0, category);
+        String expectedMessageException = "Goal not found. Id used: " + id;
+        Mockito.when(goalService.update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class)))
+                .thenThrow(new GoalNotFoundException(expectedMessageException));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(GOAL_BASE_ENDPOINT + "/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(goalUpdateRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
+
+        Mockito.verify(goalService, Mockito.times(1))
+                .update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class));
     }
 }
