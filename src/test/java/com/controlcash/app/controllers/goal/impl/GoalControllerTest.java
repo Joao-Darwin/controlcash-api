@@ -1,6 +1,7 @@
 package com.controlcash.app.controllers.goal.impl;
 
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
+import com.controlcash.app.dtos.goal.request.GoalUpdateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
 import com.controlcash.app.exceptions.GoalNotFoundException;
@@ -50,10 +51,12 @@ public class GoalControllerTest {
     private UUID id;
     private GoalCreateRequestDTO goalCreateRequestDTO;
     private GoalCompleteResponseDTO goalCompleteResponseDTO;
+    private User user;
+    private Category category;
 
     @BeforeEach
     void setUp() {
-        User user = new User(
+        user = new User(
                 UUID.randomUUID(),
                 "foobar",
                 "foobar@gmail.com",
@@ -68,7 +71,7 @@ public class GoalControllerTest {
                 List.of(),
                 List.of());
 
-        Category category = new Category(UUID.randomUUID(), "Credit card", List.of(), List.of());
+        category = new Category(UUID.randomUUID(), "Credit card", List.of(), List.of());
 
         goalCreateRequestDTO = new GoalCreateRequestDTO(LocalDate.parse("2024-08-01"), 1200.0, user, category);
         id = UUID.randomUUID();
@@ -170,5 +173,26 @@ public class GoalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
 
         Mockito.verify(goalService, Mockito.times(1)).findById(Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testUpdate_GivenAValidIdAndGoalUpdateRequestDTO_ShouldReturnAGoalCompleteResponseDTO() throws Exception {
+        category = new Category(UUID.randomUUID(), "Invest", List.of(), List.of());
+        GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(LocalDate.parse("2024-08-02"), 4200.0, category);
+        goalCompleteResponseDTO = new GoalCompleteResponseDTO(id, LocalDate.parse("2024-08-02"), 4200.0, user, category);
+        Mockito.when(goalService.update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class)))
+                .thenReturn(goalCompleteResponseDTO);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(GOAL_BASE_ENDPOINT + "/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(goalUpdateRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dueDate").value(goalCompleteResponseDTO.dueDate().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(goalCompleteResponseDTO.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user.username").value(goalCompleteResponseDTO.user().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.category.name").value(goalCompleteResponseDTO.category().getName()));
     }
 }
