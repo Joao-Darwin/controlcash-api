@@ -2,6 +2,7 @@ package com.controlcash.app.controllers.goal.impl;
 
 import com.controlcash.app.controllers.goal.IGoalController;
 import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
+import com.controlcash.app.dtos.goal.request.GoalUpdateRequestDTO;
 import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
 import com.controlcash.app.exceptions.GoalNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,6 +63,18 @@ public class GoalController implements IGoalController {
     public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
             GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.findById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
+        } catch (GoalNotFoundException goalNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), goalNotFoundException.getMessage(), "");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestBody GoalUpdateRequestDTO goalUpdateRequestDTO, @PathVariable UUID id) {
+        try {
+            GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.update(goalUpdateRequestDTO, id);
 
             return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
         } catch (GoalNotFoundException goalNotFoundException) {
