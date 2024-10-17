@@ -219,4 +219,15 @@ public class GoalControllerTest {
         Mockito.verify(goalService, Mockito.times(1))
                 .update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class));
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldReturnOk() throws Exception {
+        Mockito.doNothing().when(goalService).delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(GOAL_BASE_ENDPOINT + "/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+    }
 }
