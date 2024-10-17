@@ -13,4 +13,5 @@ public interface IGoalController {
     ResponseEntity<?> findAll(int page, int size, String sort);
     ResponseEntity<?> findById(UUID id);
     ResponseEntity<?> update(GoalUpdateRequestDTO goalUpdateRequestDTO, UUID id);
+    ResponseEntity<?> delete(UUID id);
 }
