@@ -52,6 +52,7 @@ public class GoalControllerTest {
     private UUID id;
     private GoalCreateRequestDTO goalCreateRequestDTO;
     private GoalCompleteResponseDTO goalCompleteResponseDTO;
+    private String goalNotFoundExceptionMessage;
     private User user;
     private Category category;
 
@@ -77,6 +78,7 @@ public class GoalControllerTest {
 
         goalCreateRequestDTO = new GoalCreateRequestDTO(LocalDate.parse("2024-08-01"), 1200.0, user, category);
         id = UUID.randomUUID();
+        goalNotFoundExceptionMessage = "Goal not found. Id used: " + id;
         goalCompleteResponseDTO = new GoalCompleteResponseDTO(id, LocalDate.parse("2024-08-01"), 1200.0, user, category);
     }
 
@@ -164,15 +166,14 @@ public class GoalControllerTest {
 
     @Test
     void testFindById_GivenANotValidId_ShouldReturnBadRequest() throws Exception {
-        String expectedMessageException = "Goal not found. Id used: " + id;
-        Mockito.when(goalService.findById(Mockito.any(UUID.class))).thenThrow(new GoalNotFoundException(expectedMessageException));
+        Mockito.when(goalService.findById(Mockito.any(UUID.class))).thenThrow(new GoalNotFoundException(goalNotFoundExceptionMessage));
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(GOAL_BASE_ENDPOINT + "/" + id));
 
         response
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(goalNotFoundExceptionMessage));
 
         Mockito.verify(goalService, Mockito.times(1)).findById(Mockito.any(UUID.class));
     }
@@ -205,9 +206,8 @@ public class GoalControllerTest {
     void testUpdate_GivenANotValidId_ShouldReturnABadRequest() throws Exception {
         category = new Category(UUID.randomUUID(), "Invest", List.of(), List.of());
         GoalUpdateRequestDTO goalUpdateRequestDTO = new GoalUpdateRequestDTO(LocalDate.parse("2024-08-02"), 4200.0, category);
-        String expectedMessageException = "Goal not found. Id used: " + id;
         Mockito.when(goalService.update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class)))
-                .thenThrow(new GoalNotFoundException(expectedMessageException));
+                .thenThrow(new GoalNotFoundException(goalNotFoundExceptionMessage));
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(GOAL_BASE_ENDPOINT + "/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -216,7 +216,7 @@ public class GoalControllerTest {
         response
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(goalNotFoundExceptionMessage));
 
         Mockito.verify(goalService, Mockito.times(1))
                 .update(Mockito.any(GoalUpdateRequestDTO.class), Mockito.any(UUID.class));
@@ -235,15 +235,14 @@ public class GoalControllerTest {
 
     @Test
     void testDelete_GivenANotValidId_ShouldReturnABadRequest() throws Exception {
-        String expectedMessageException = "Goal not found. Id used: " + id;
-        Mockito.doThrow(new GoalNotFoundException(expectedMessageException)).when(goalService).delete(Mockito.any(UUID.class));
+        Mockito.doThrow(new GoalNotFoundException(goalNotFoundExceptionMessage)).when(goalService).delete(Mockito.any(UUID.class));
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(GOAL_BASE_ENDPOINT + "/" + id));
 
         response
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(goalNotFoundExceptionMessage));
 
         Mockito.verify(goalService, Mockito.times(1)).delete(Mockito.any(UUID.class));
     }
