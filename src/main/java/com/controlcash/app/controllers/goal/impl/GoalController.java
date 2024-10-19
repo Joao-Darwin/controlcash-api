@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +40,19 @@ public class GoalController implements IGoalController {
         this.goalService = goalService;
     }
 
-    @PostMapping
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<GoalCompleteResponseDTO> create(@RequestBody GoalCreateRequestDTO goalCreateRequestDTO) {
         GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.create(goalCreateRequestDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
     }
 
-    @GetMapping
+    @GetMapping(
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<?> findAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -60,7 +66,10 @@ public class GoalController implements IGoalController {
         return ResponseEntity.status(HttpStatus.OK).body(goalSimpleResponseDTOPage);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(
+            value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
             GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.findById(id);
@@ -72,7 +81,11 @@ public class GoalController implements IGoalController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(
+            value = "/{id}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<?> update(@RequestBody GoalUpdateRequestDTO goalUpdateRequestDTO, @PathVariable UUID id) {
         try {
             GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.update(goalUpdateRequestDTO, id);
@@ -84,7 +97,10 @@ public class GoalController implements IGoalController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(
+            value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
             goalService.delete(id);
