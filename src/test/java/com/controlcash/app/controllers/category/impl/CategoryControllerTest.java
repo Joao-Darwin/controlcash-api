@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.List;
 import java.util.UUID;
 
-@WebMvcTest
+@WebMvcTest(controllers = {CategoryController.class})
 @AutoConfigureMockMvc(addFilters = false)
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class CategoryControllerTest {

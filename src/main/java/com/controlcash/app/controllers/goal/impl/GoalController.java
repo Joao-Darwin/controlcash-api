@@ -1,11 +1,13 @@
-package com.controlcash.app.controllers.category.impl;
+package com.controlcash.app.controllers.goal.impl;
 
-import com.controlcash.app.controllers.category.ICategoryController;
-import com.controlcash.app.dtos.category.request.CategoryRequestDTO;
-import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
-import com.controlcash.app.exceptions.CategoryNotFoundException;
+import com.controlcash.app.controllers.goal.IGoalController;
+import com.controlcash.app.dtos.goal.request.GoalCreateRequestDTO;
+import com.controlcash.app.dtos.goal.request.GoalUpdateRequestDTO;
+import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
+import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
+import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.exceptions.ResponseEntityException;
-import com.controlcash.app.services.CategoryService;
+import com.controlcash.app.services.GoalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,24 +30,24 @@ import java.time.Instant;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${path-api}/categories")
-public class CategoryController implements ICategoryController {
+@RequestMapping("${path-api}/goals")
+public class GoalController implements IGoalController {
 
-    private final CategoryService categoryService;
+    private final GoalService goalService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
+    public GoalController(GoalService goalService) {
+        this.goalService = goalService;
     }
 
     @PostMapping(
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    public ResponseEntity<?> create(CategoryRequestDTO categoryRequestDTO) {
-        CategoryResponseDTO categoryResponseDTO = categoryService.create(categoryRequestDTO);
+    public ResponseEntity<GoalCompleteResponseDTO> create(@RequestBody GoalCreateRequestDTO goalCreateRequestDTO) {
+        GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.create(goalCreateRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
     }
 
     @GetMapping(
@@ -57,11 +59,11 @@ public class CategoryController implements ICategoryController {
             @RequestParam(value = "sort", defaultValue = "asc") String sort) {
 
         Sort.Direction sortDirection = sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "name"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "dueDate"));
 
-        Page<CategoryResponseDTO> categoryResponseDTOPage = categoryService.findAll(pageable);
+        Page<GoalSimpleResponseDTO> goalSimpleResponseDTOPage = goalService.findAll(pageable);
 
-        return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTOPage);
+        return ResponseEntity.status(HttpStatus.OK).body(goalSimpleResponseDTOPage);
     }
 
     @GetMapping(
@@ -70,11 +72,11 @@ public class CategoryController implements ICategoryController {
     )
     public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
-            CategoryResponseDTO categoryResponseDTO = categoryService.findById(id);
+            GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.findById(id);
 
-            return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
-        } catch (CategoryNotFoundException categoryNotFoundException) {
-            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), categoryNotFoundException.getMessage(), "");
+            return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
+        } catch (GoalNotFoundException goalNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), goalNotFoundException.getMessage(), "");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
         }
     }
@@ -84,13 +86,13 @@ public class CategoryController implements ICategoryController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    public ResponseEntity<?> update(@RequestBody CategoryRequestDTO categoryRequestDTO, @PathVariable UUID id) {
+    public ResponseEntity<?> update(@RequestBody GoalUpdateRequestDTO goalUpdateRequestDTO, @PathVariable UUID id) {
         try {
-            CategoryResponseDTO categoryResponseDTO = categoryService.update(categoryRequestDTO, id);
+            GoalCompleteResponseDTO goalCompleteResponseDTO = goalService.update(goalUpdateRequestDTO, id);
 
-            return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDTO);
-        } catch (CategoryNotFoundException categoryNotFoundException) {
-            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), categoryNotFoundException.getMessage(), "");
+            return ResponseEntity.status(HttpStatus.OK).body(goalCompleteResponseDTO);
+        } catch (GoalNotFoundException goalNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), goalNotFoundException.getMessage(), "");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
         }
     }
@@ -101,11 +103,11 @@ public class CategoryController implements ICategoryController {
     )
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
-            categoryService.delete(id);
+            goalService.delete(id);
 
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (CategoryNotFoundException categoryNotFoundException) {
-            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), categoryNotFoundException.getMessage(), "");
+        } catch (GoalNotFoundException goalNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), goalNotFoundException.getMessage(), "");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
         }
     }
