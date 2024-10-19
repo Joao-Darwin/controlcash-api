@@ -6,6 +6,7 @@ import com.controlcash.app.dtos.goal.response.GoalCompleteResponseDTO;
 import com.controlcash.app.dtos.goal.response.GoalSimpleResponseDTO;
 import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.models.Category;
+import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
 import com.controlcash.app.services.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +57,7 @@ public class GoalControllerTest {
 
     @BeforeEach
     void setUp() {
+        Permission permission = new Permission(UUID.randomUUID(), "admin", List.of());
         user = new User(
                 UUID.randomUUID(),
                 "foobar",
@@ -67,7 +69,7 @@ public class GoalControllerTest {
                 true,
                 true,
                 true,
-                List.of(),
+                List.of(permission),
                 List.of(),
                 List.of());
 
@@ -91,8 +93,8 @@ public class GoalControllerTest {
         response
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.dueDate").value(goalCreateRequestDTO.dueDate()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dueDate").value(goalCreateRequestDTO.dueDate().toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(goalCreateRequestDTO.value()));
     }
 
