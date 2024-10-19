@@ -232,4 +232,19 @@ public class GoalControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldReturnABadRequest() throws Exception {
+        String expectedMessageException = "Goal not found. Id used: " + id;
+        Mockito.doThrow(new GoalNotFoundException(expectedMessageException)).when(goalService).delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(GOAL_BASE_ENDPOINT + "/" + id));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedMessageException));
+
+        Mockito.verify(goalService, Mockito.times(1)).delete(Mockito.any(UUID.class));
+    }
 }
