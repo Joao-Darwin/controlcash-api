@@ -79,7 +79,7 @@ public class TransactionControllerTest {
                 expectedDescription,
                 1400.0,
                 1,
-                TransactionType.ENTRANCE,
+                TransactionType.PAYMENT,
                 user,
                 List.of(category)
         );
