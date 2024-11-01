@@ -1,6 +1,8 @@
 package com.controlcash.app.controllers.transaction.impl;
 
+import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
 import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
+import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Permission;
@@ -47,6 +49,7 @@ public class TransactionControllerTest {
     @MockBean
     private TransactionService transactionService;
 
+    UUID expectedId;
     private User user;
     private Category category;
 
@@ -69,11 +72,11 @@ public class TransactionControllerTest {
                 List.of());
 
         category = new Category(UUID.randomUUID(), "Home", List.of(), List.of());
+        expectedId = UUID.randomUUID();
     }
 
     @Test
     void testCreate_GivenAnTransactionCreateRequestDTO_ShouldReturnTransactionCreateResponseDTOAndOk() throws Exception {
-        UUID expectedId = UUID.randomUUID();
         String expectedName = "Books";
         String expectedDescription = "Books that i buy on Amazon";
         LocalDate expectedCreatedDate = LocalDate.now();
@@ -109,7 +112,6 @@ public class TransactionControllerTest {
 
     @Test
     void testFindAll_GivenAPageable_ShouldReturnAPageWithTransactionCreateResponseDTOAndOk() throws Exception {
-        UUID expectedId = UUID.randomUUID();
         String expectedName = "Books";
         String expectedDescription = "Books that i buy on Amazon";
         LocalDate expectedCreatedDate = LocalDate.now();
@@ -146,7 +148,6 @@ public class TransactionControllerTest {
 
     @Test
     void testFindAll_GivenAPageableWithDescSort_ShouldReturnAPageWithTransactionCreateResponseDTOAndOk() throws Exception {
-        UUID expectedId = UUID.randomUUID();
         String expectedName = "Books";
         String expectedDescription = "Books that i buy on Amazon";
         LocalDate expectedCreatedDate = LocalDate.now();
@@ -179,5 +180,40 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value(expectedName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].description").value(expectedDescription))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].createdDate").value(expectedCreatedDate.toString()));
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnATransactionCompleteResponseDTOAndOk() throws Exception {
+        String expectedName = "Books";
+        String expectedDescription = "Books that i buy on Amazon";
+        LocalDate expectedCreatedDate = LocalDate.now();
+        Double expectedValue = 248.89;
+        int expectedAmountRepeat = 2;
+        TransactionType expectedTransactionType = TransactionType.PAYMENT;
+        TransactionCompleteResponseDTO transactionCompleteResponseDTO = new TransactionCompleteResponseDTO(
+                expectedId,
+                expectedName,
+                expectedDescription,
+                expectedCreatedDate,
+                expectedValue,
+                expectedAmountRepeat,
+                expectedTransactionType,
+                List.of(new CategoryResponseDTO(UUID.randomUUID(), "Home"))
+        );
+        Mockito.when(transactionService.findById(Mockito.any(UUID.class))).thenReturn(transactionCompleteResponseDTO);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTION_BASE_ENDPOINT + "/" + expectedId.toString()));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value(expectedCreatedDate.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.value").value(expectedValue))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.amountRepeat").value(expectedAmountRepeat))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.transactionType").value(expectedTransactionType.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.categories.size()").value(1));
     }
 }
