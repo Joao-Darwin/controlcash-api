@@ -2,7 +2,10 @@ package com.controlcash.app.controllers.transaction.impl;
 
 import com.controlcash.app.controllers.transaction.ITransactionController;
 import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
+import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
+import com.controlcash.app.exceptions.ResponseEntityException;
+import com.controlcash.app.exceptions.TransactionNotFoundException;
 import com.controlcash.app.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,11 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @RequestMapping("${path-api}/transactions")
 @RestController
@@ -54,5 +61,22 @@ class TransactionController implements ITransactionController {
         Page<TransactionCreateResponseDTO> transactionCreateResponseDTOPage = transactionService.findAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(transactionCreateResponseDTOPage);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable UUID id) {
+        try {
+            TransactionCompleteResponseDTO transactionCompleteResponseDTO = transactionService.findById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(transactionCompleteResponseDTO);
+        } catch (TransactionNotFoundException transactionNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(
+                    Instant.now(),
+                    transactionNotFoundException.getMessage(),
+                    ""
+            );
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
     }
 }
