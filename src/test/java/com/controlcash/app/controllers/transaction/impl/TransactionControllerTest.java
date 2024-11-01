@@ -4,6 +4,7 @@ import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
 import com.controlcash.app.dtos.transaction.request.TransactionCreateRequestDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCompleteResponseDTO;
 import com.controlcash.app.dtos.transaction.response.TransactionCreateResponseDTO;
+import com.controlcash.app.exceptions.TransactionNotFoundException;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
@@ -49,7 +50,8 @@ public class TransactionControllerTest {
     @MockBean
     private TransactionService transactionService;
 
-    UUID expectedId;
+    private UUID expectedId;
+    private String expectedTransactionNotFoundException;
     private User user;
     private Category category;
 
@@ -73,6 +75,7 @@ public class TransactionControllerTest {
 
         category = new Category(UUID.randomUUID(), "Home", List.of(), List.of());
         expectedId = UUID.randomUUID();
+        expectedTransactionNotFoundException = "Transaction not found. Id used: " + expectedId;
     }
 
     @Test
@@ -215,5 +218,18 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.amountRepeat").value(expectedAmountRepeat))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.transactionType").value(expectedTransactionType.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.categories.size()").value(1));
+    }
+
+    @Test
+    void testFindById_GivenANotValidId_ShouldReturnResponseExceptionMessageAndBadRequest() throws Exception {
+        Mockito.when(transactionService.findById(Mockito.any(UUID.class))).thenThrow(new TransactionNotFoundException(expectedTransactionNotFoundException));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTION_BASE_ENDPOINT + "/" + expectedId.toString()));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedTransactionNotFoundException));
     }
 }
