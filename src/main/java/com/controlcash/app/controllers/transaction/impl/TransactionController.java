@@ -34,7 +34,7 @@ class TransactionController implements ITransactionController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    ResponseEntity<TransactionCreateResponseDTO> create(@RequestBody TransactionCreateRequestDTO transactionCreateRequestDTO) {
+    public ResponseEntity<TransactionCreateResponseDTO> create(@RequestBody TransactionCreateRequestDTO transactionCreateRequestDTO) {
         TransactionCreateResponseDTO transactionCreateResponseDTO = transactionService.create(transactionCreateRequestDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(transactionCreateResponseDTO);
@@ -43,7 +43,7 @@ class TransactionController implements ITransactionController {
     @GetMapping(
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    ResponseEntity<Page<TransactionCreateResponseDTO>> findAll(
+    public ResponseEntity<Page<TransactionCreateResponseDTO>> findAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "asc") String sort) {
