@@ -91,8 +91,18 @@ class TransactionController implements ITransactionController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public ResponseEntity<?> update(@RequestBody TransactionCreateRequestDTO transactionCreateRequestDTO, @PathVariable UUID id) {
-        TransactionCreateResponseDTO transactionCreateResponseDTO = transactionService.update(transactionCreateRequestDTO, id);
+        try {
+            TransactionCreateResponseDTO transactionCreateResponseDTO = transactionService.update(transactionCreateRequestDTO, id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(transactionCreateResponseDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(transactionCreateResponseDTO);
+        } catch (TransactionNotFoundException transactionNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(
+                    Instant.now(),
+                    transactionNotFoundException.getMessage(),
+                    ""
+            );
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
     }
 }
