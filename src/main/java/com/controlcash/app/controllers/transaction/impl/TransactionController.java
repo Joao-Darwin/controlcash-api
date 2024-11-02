@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,7 +64,10 @@ class TransactionController implements ITransactionController {
         return ResponseEntity.status(HttpStatus.OK).body(transactionCreateResponseDTOPage);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(
+            value ="/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
             TransactionCompleteResponseDTO transactionCompleteResponseDTO = transactionService.findById(id);
@@ -78,5 +82,17 @@ class TransactionController implements ITransactionController {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
         }
+    }
+
+    @Override
+    @PutMapping(
+            value ="/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<?> update(@RequestBody TransactionCreateRequestDTO transactionCreateRequestDTO, @PathVariable UUID id) {
+        TransactionCreateResponseDTO transactionCreateResponseDTO = transactionService.update(transactionCreateRequestDTO, id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(transactionCreateResponseDTO);
     }
 }
