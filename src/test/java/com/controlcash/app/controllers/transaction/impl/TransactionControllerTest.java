@@ -110,7 +110,6 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value(expectedCreatedDate.toString()));
-
     }
 
     @Test
@@ -231,5 +230,40 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedTransactionNotFoundException));
+    }
+
+    @Test
+    void testUpdate_GivenAValidIdAndTransactionCreateRequestDTO_ShouldReturnATransactionCreateResponseDTOAndOk() throws Exception {
+        String expectedName = "Books";
+        String expectedDescription = "Books that i buy on Amazon";
+        LocalDate expectedCreatedDate = LocalDate.now();
+        TransactionCreateRequestDTO transactionCreateRequestDTO = new TransactionCreateRequestDTO(
+                expectedName,
+                expectedDescription,
+                1400.0,
+                1,
+                TransactionType.PAYMENT,
+                user,
+                List.of(category)
+        );
+        TransactionCreateResponseDTO transactionCreateResponseDTO = new TransactionCreateResponseDTO(
+                expectedId,
+                expectedName,
+                expectedDescription,
+                expectedCreatedDate);
+        Mockito.when(transactionService.update(Mockito.any(TransactionCreateRequestDTO.class), Mockito.any(UUID.class)))
+                .thenReturn(transactionCreateResponseDTO);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(TRANSACTION_BASE_ENDPOINT + "/" + expectedId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(transactionCreateRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value(expectedCreatedDate.toString()));
     }
 }
