@@ -110,6 +110,9 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value(expectedCreatedDate.toString()));
+
+        Mockito.verify(transactionService, Mockito.times(1))
+                .create(Mockito.any(TransactionCreateRequestDTO.class));
     }
 
     @Test
@@ -146,6 +149,9 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value(expectedName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].description").value(expectedDescription))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].createdDate").value(expectedCreatedDate.toString()));
+
+        Mockito.verify(transactionService, Mockito.times(1))
+                .findAll(Mockito.any(Pageable.class));
     }
 
     @Test
@@ -182,6 +188,9 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value(expectedName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].description").value(expectedDescription))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].createdDate").value(expectedCreatedDate.toString()));
+
+        Mockito.verify(transactionService, Mockito.times(1))
+                .findAll(Mockito.any(Pageable.class));
     }
 
     @Test
@@ -217,6 +226,9 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.amountRepeat").value(expectedAmountRepeat))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.transactionType").value(expectedTransactionType.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.categories.size()").value(1));
+
+        Mockito.verify(transactionService, Mockito.times(1))
+                .findById(Mockito.any(UUID.class));
     }
 
     @Test
@@ -230,6 +242,9 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedTransactionNotFoundException));
+
+        Mockito.verify(transactionService, Mockito.times(1))
+                .findById(Mockito.any(UUID.class));
     }
 
     @Test
@@ -265,6 +280,10 @@ public class TransactionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value(expectedCreatedDate.toString()));
+
+        Mockito
+                .verify(transactionService, Mockito.times(1))
+                .update(Mockito.any(TransactionCreateRequestDTO.class), Mockito.any(UUID.class));
     }
 
     @Test
