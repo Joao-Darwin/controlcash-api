@@ -311,4 +311,22 @@ public class TransactionControllerTest {
 
         Mockito.verify(transactionService, Mockito.times(1)).delete(Mockito.any(UUID.class));
     }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldReturnABadRequest() throws Exception {
+        Mockito.doThrow(new TransactionNotFoundException(expectedTransactionNotFoundException))
+                .when(transactionService)
+                .delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders.delete(TRANSACTION_BASE_ENDPOINT + "/" + expectedId));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedTransactionNotFoundException));
+
+        Mockito.verify(transactionService, Mockito.times(1)).delete(Mockito.any(UUID.class));
+    }
 }
