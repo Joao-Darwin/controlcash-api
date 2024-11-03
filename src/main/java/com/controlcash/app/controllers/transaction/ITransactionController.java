@@ -12,4 +12,5 @@ public interface ITransactionController {
     ResponseEntity<Page<TransactionCreateResponseDTO>> findAll(int page, int size, String sort);
     ResponseEntity<?> findById(UUID id);
     ResponseEntity<?> update(TransactionCreateRequestDTO transactionCreateRequestDTO, UUID id);
+    ResponseEntity<Void> delete(UUID id);
 }

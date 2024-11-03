@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,7 +66,7 @@ class TransactionController implements ITransactionController {
     }
 
     @GetMapping(
-            value ="/{id}",
+            value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public ResponseEntity<?> findById(@PathVariable UUID id) {
@@ -86,7 +87,7 @@ class TransactionController implements ITransactionController {
 
     @Override
     @PutMapping(
-            value ="/{id}",
+            value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
@@ -104,5 +105,16 @@ class TransactionController implements ITransactionController {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
         }
+    }
+
+    @Override
+    @DeleteMapping(
+            value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        transactionService.delete(id);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
