@@ -112,9 +112,19 @@ class TransactionController implements ITransactionController {
             value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        transactionService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
+        try {
+            transactionService.delete(id);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (TransactionNotFoundException transactionNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(
+                    Instant.now(),
+                    transactionNotFoundException.getMessage(),
+                    ""
+            );
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
     }
 }
