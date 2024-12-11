@@ -4,6 +4,7 @@ import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
 import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCompleteResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCreateResponseDTO;
+import com.controlcash.app.exceptions.UserNotFoundException;
 import com.controlcash.app.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,7 @@ public class UserControllerTest {
     private String expectedEmail;
     private Double expectedSalary;
     private UUID expectedUUID;
+    private String userNotFoundExceptionMessage;
     private UserCreateResponseDTO userResponse;
 
     @BeforeEach
@@ -58,6 +60,7 @@ public class UserControllerTest {
         expectedFullName = "Foo bar";
         expectedSalary = 1405.0;
         expectedUUID = UUID.randomUUID();
+        userNotFoundExceptionMessage = "User not found. Id used: " + expectedUUID;
         userResponse = new UserCreateResponseDTO(expectedUUID, expectedUsername, expectedEmail);
     }
 
@@ -184,6 +187,17 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(expectedEmail))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fullName").value(expectedFullName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(expectedSalary));
+    }
 
+    @Test
+    void testFindById_GivenANotValidId_ShouldAResponseEntityException() throws Exception {
+        Mockito.when(userService.findById(Mockito.any(UUID.class))).thenThrow(new UserNotFoundException(userNotFoundExceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(USER_BASE_ENDPOINT + "/" + expectedUUID));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(userNotFoundExceptionMessage));
     }
 }
