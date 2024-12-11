@@ -126,4 +126,34 @@ public class UserControllerTest {
 
         Mockito.verify(userService, Mockito.times(1)).findAll(Mockito.any(Pageable.class));
     }
+
+    @Test
+    void testFindAll_GivenAPageableWithInvalidPageParam_ShouldReturnAResponseEntityException() throws Exception {
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(USER_BASE_ENDPOINT)
+                .queryParam("page", "-1")
+                .queryParam("size", "5")
+                .queryParam("sort", "desc"));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Page index must not be less than zero"));
+
+        Mockito.verify(userService, Mockito.never()).findAll(Mockito.any(Pageable.class));
+    }
+
+    @Test
+    void testFindAll_GivenAPageableWithInvalidSizeParam_ShouldReturnAResponseEntityException() throws Exception {
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(USER_BASE_ENDPOINT)
+                .queryParam("page", "0")
+                .queryParam("size", "-1")
+                .queryParam("sort", "desc"));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Page size must not be less than one"));
+
+        Mockito.verify(userService, Mockito.never()).findAll(Mockito.any(Pageable.class));
+    }
 }
