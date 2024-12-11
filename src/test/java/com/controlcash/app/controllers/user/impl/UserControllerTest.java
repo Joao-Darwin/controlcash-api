@@ -2,6 +2,7 @@ package com.controlcash.app.controllers.user.impl;
 
 import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
 import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
+import com.controlcash.app.dtos.user.response.UserCompleteResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCreateResponseDTO;
 import com.controlcash.app.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +45,9 @@ public class UserControllerTest {
     private UserService userService;
 
     private String expectedUsername;
+    private String expectedFullName;
     private String expectedEmail;
+    private Double expectedSalary;
     private UUID expectedUUID;
     private UserCreateResponseDTO userResponse;
 
@@ -52,13 +55,15 @@ public class UserControllerTest {
     void setUp() {
         expectedUsername = "foobar";
         expectedEmail = "foobar@gmail.com";
+        expectedFullName = "Foo bar";
+        expectedSalary = 1405.0;
         expectedUUID = UUID.randomUUID();
         userResponse = new UserCreateResponseDTO(expectedUUID, expectedUsername, expectedEmail);
     }
 
     @Test
     void testCreate_GivenAValidUserCreateRequestDTO_ShouldReturnAnUserCreateResponseDTOAndOk() throws Exception {
-        UserCreateRequestDTO userRequest = new UserCreateRequestDTO(expectedUsername, expectedEmail, "123456", "Foo Bar", 1405.00);
+        UserCreateRequestDTO userRequest = new UserCreateRequestDTO(expectedUsername, expectedEmail, "123456", expectedFullName, expectedSalary);
         Mockito.when(userService.create(Mockito.any(UserCreateRequestDTO.class))).thenReturn(userResponse);
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(USER_BASE_ENDPOINT)
@@ -155,5 +160,30 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Page size must not be less than one"));
 
         Mockito.verify(userService, Mockito.never()).findAll(Mockito.any(Pageable.class));
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnUserCompleteResponseDTO() throws Exception {
+        UserCompleteResponseDTO user = new UserCompleteResponseDTO(
+                expectedUUID,
+                expectedUsername,
+                expectedEmail,
+                expectedFullName,
+                expectedSalary,
+                List.of(),
+                List.of(),
+                List.of());
+        Mockito.when(userService.findById(Mockito.any(UUID.class))).thenReturn(user);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get(USER_BASE_ENDPOINT + "/" + expectedUUID));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedUUID.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userName").value(expectedUsername))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(expectedEmail))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fullName").value(expectedFullName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(expectedSalary));
+
     }
 }
