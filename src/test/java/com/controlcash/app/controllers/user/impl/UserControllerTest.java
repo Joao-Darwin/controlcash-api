@@ -240,4 +240,15 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(userNotFoundExceptionMessage));
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldReturnAnOk() throws Exception {
+        Mockito.doNothing().when(userService).delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(USER_BASE_ENDPOINT + "/" + expectedUUID));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+    }
 }
