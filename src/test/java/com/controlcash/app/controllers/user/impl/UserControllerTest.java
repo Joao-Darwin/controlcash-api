@@ -200,4 +200,27 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(userNotFoundExceptionMessage));
     }
+
+    @Test
+    void testUpdate_GivenAValidIdAndUserCreateRequestDTO_ShouldReturnAUserCreateResponseDTO() throws Exception {
+        expectedUsername = "foobar 2";
+        UserCreateRequestDTO userRequest = new UserCreateRequestDTO(expectedUsername, expectedEmail, "123456", expectedFullName, expectedSalary);
+        userResponse = new UserCreateResponseDTO(expectedUUID, expectedUsername, expectedEmail);
+        Mockito.when(userService.update(Mockito.any(UUID.class), Mockito.any(UserCreateRequestDTO.class)))
+                .thenReturn(userResponse);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(USER_BASE_ENDPOINT + "/" + expectedUUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequest)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedUUID.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userName").value(expectedUsername))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(expectedEmail));
+
+        Mockito.verify(userService, Mockito.times(1))
+                .update(Mockito.any(UUID.class), Mockito.any(UserCreateRequestDTO.class));
+    }
 }
