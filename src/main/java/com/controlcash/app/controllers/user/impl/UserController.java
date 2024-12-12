@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +91,19 @@ public class UserController implements IUserController {
             UserCreateResponseDTO user = userService.update(id, userUpdated);
 
             return ResponseEntity.status(HttpStatus.OK).body(user);
+        } catch (UserNotFoundException userNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), userNotFoundException.getMessage(), "");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
+        try {
+            userService.delete(id);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UserNotFoundException userNotFoundException) {
             ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), userNotFoundException.getMessage(), "");
 

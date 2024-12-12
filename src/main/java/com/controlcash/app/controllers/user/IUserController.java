@@ -13,4 +13,5 @@ public interface IUserController {
     ResponseEntity<Page<UserAllResponseDTO>> findAll(int page, int size, String sort);
     ResponseEntity<?> findById(UUID id);
     ResponseEntity<?> update(UUID id, UserCreateRequestDTO userUpdated);
+    ResponseEntity<?> delete(UUID id);
 }
