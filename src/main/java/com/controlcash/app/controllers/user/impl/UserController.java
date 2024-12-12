@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,6 +71,23 @@ public class UserController implements IUserController {
     public ResponseEntity<?> findById(@PathVariable(name = "id") UUID id) {
         try {
             UserCompleteResponseDTO user = userService.findById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        } catch (UserNotFoundException userNotFoundException) {
+            ResponseEntityException responseEntityException = new ResponseEntityException(Instant.now(), userNotFoundException.getMessage(), "");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseEntityException);
+        }
+    }
+
+    @PutMapping(
+            value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<?> update(@PathVariable(name = "id") UUID id, @RequestBody UserCreateRequestDTO userUpdated) {
+        try {
+            UserCreateResponseDTO user = userService.update(id, userUpdated);
 
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (UserNotFoundException userNotFoundException) {
