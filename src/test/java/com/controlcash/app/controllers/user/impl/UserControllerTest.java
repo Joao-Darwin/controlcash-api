@@ -251,4 +251,19 @@ public class UserControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
+
+    @Test
+    void testDelete_GivenANotValidId_ShouldReturnAResponseEntityExceptionAndBadRequest() throws Exception {
+        Mockito
+                .doThrow(new UserNotFoundException(userNotFoundExceptionMessage))
+                .when(userService)
+                .delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete(USER_BASE_ENDPOINT + "/" + expectedUUID));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(userNotFoundExceptionMessage));
+    }
 }
