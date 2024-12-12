@@ -223,4 +223,21 @@ public class UserControllerTest {
         Mockito.verify(userService, Mockito.times(1))
                 .update(Mockito.any(UUID.class), Mockito.any(UserCreateRequestDTO.class));
     }
+
+    @Test
+    void testUpdate_GivenANotValidId_ShouldReturnAResponseEntityException() throws Exception {
+        expectedUsername = "foobar 2";
+        UserCreateRequestDTO userRequest = new UserCreateRequestDTO(expectedUsername, expectedEmail, "123456", expectedFullName, expectedSalary);
+        Mockito.when(userService.update(Mockito.any(UUID.class), Mockito.any(UserCreateRequestDTO.class)))
+                .thenThrow(new UserNotFoundException(userNotFoundExceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(USER_BASE_ENDPOINT + "/" + expectedUUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequest)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(userNotFoundExceptionMessage));
+    }
 }
