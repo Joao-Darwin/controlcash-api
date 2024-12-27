@@ -63,4 +63,24 @@ public class PermissionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription));
     }
+
+    @Test
+    void testCreate_GivenADuplicatePermissionName_ShouldReturnABadRequest() throws Exception {
+        String permissionDuplicatedExceptionMessage = "Permission '" + expectedDescription + "' already exist";
+        PermissionCreateRequestDTO permissionRequest = new PermissionCreateRequestDTO(expectedDescription);
+        Mockito
+                .when(permissionService.create(Mockito.any(PermissionCreateRequestDTO.class)))
+                .thenThrow(new IllegalArgumentException(permissionDuplicatedExceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(PERMISSION_BASE_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(permissionRequest)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(permissionDuplicatedExceptionMessage));
+    }
 }
