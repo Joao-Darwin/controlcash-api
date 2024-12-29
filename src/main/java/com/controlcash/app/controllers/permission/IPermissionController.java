@@ -13,4 +13,5 @@ public interface IPermissionController {
     ResponseEntity<Page<AllPermissionResponseDTO>> findAll(int page, int size, String sort);
     ResponseEntity<?> findById(UUID id);
     ResponseEntity<?> update(PermissionUpdateRequestDTO permissionUpdateRequestDTO, UUID id);
+    ResponseEntity<?> delete(UUID id);
 }
