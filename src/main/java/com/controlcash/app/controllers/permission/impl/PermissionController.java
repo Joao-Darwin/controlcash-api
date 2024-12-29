@@ -4,6 +4,7 @@ import com.controlcash.app.controllers.permission.IPermissionController;
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
+import com.controlcash.app.exceptions.PermissionNotFoundException;
 import com.controlcash.app.exceptions.ResponseEntityException;
 import com.controlcash.app.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("${path-api}/permissions")
@@ -66,5 +69,23 @@ public class PermissionController implements IPermissionController {
         Page<AllPermissionResponseDTO> allPermissionResponseDTOS = permissionService.findAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(allPermissionResponseDTOS);
+    }
+
+    @GetMapping(
+            value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<?> findById(@PathVariable(name = "id") UUID id) {
+        try {
+            PermissionResponseDTO permissionResponseDTO = permissionService.findById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(permissionResponseDTO);
+        } catch (PermissionNotFoundException permissionNotFoundException) {
+            ResponseEntityException response = new ResponseEntityException(
+                    Instant.now(),
+                    permissionNotFoundException.getMessage(),
+                    "uri=/api/permissions/" + id.toString()
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 }
