@@ -1,6 +1,7 @@
 package com.controlcash.app.controllers.permission.impl;
 
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.request.PermissionUpdateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.exceptions.PermissionNotFoundException;
@@ -46,6 +47,7 @@ public class PermissionControllerTest {
     private String expectedDescription;
     private PermissionResponseDTO permissionResponse;
     private String permissionNotFoundExceptionMessage;
+    private String permissionDuplicatedExceptionMessage;
 
     @BeforeEach
     void setUp() {
@@ -53,6 +55,7 @@ public class PermissionControllerTest {
         expectedDescription = "Foo";
         permissionResponse = new PermissionResponseDTO(expectedId, expectedDescription, List.of());
         permissionNotFoundExceptionMessage = "Permission not found. Id used: " + expectedId;
+        permissionDuplicatedExceptionMessage = "Permission '" + expectedDescription + "' already exist";
     }
 
     @Test
@@ -75,7 +78,6 @@ public class PermissionControllerTest {
 
     @Test
     void testCreate_GivenADuplicatePermissionName_ShouldReturnABadRequest() throws Exception {
-        String permissionDuplicatedExceptionMessage = "Permission '" + expectedDescription + "' already exist";
         PermissionCreateRequestDTO permissionRequest = new PermissionCreateRequestDTO(expectedDescription);
         Mockito
                 .when(permissionService.create(Mockito.any(PermissionCreateRequestDTO.class)))
@@ -183,5 +185,70 @@ public class PermissionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(permissionNotFoundExceptionMessage));
 
         Mockito.verify(permissionService, Mockito.times(1)).findById(Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testUpdate_GivenAValidIdAndPermissionUpdateRequestDTO_ShouldReturnAPermissionResponseDTOAndOn() throws Exception {
+        PermissionUpdateRequestDTO permissionRequest = new PermissionUpdateRequestDTO(expectedDescription, List.of());
+        Mockito.when(permissionService
+                .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class)))
+                .thenReturn(permissionResponse);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(PERMISSION_BASE_ENDPOINT + "/" + expectedId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(permissionRequest)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription));
+
+        Mockito.verify(permissionService, Mockito.times(1))
+                .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testUpdate_GivenAnInvalidId_ShouldReturnABadRequest() throws Exception {
+        PermissionUpdateRequestDTO permissionRequest = new PermissionUpdateRequestDTO(expectedDescription, List.of());
+        Mockito.when(permissionService
+                        .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class)))
+                .thenThrow(new PermissionNotFoundException(permissionNotFoundExceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(PERMISSION_BASE_ENDPOINT + "/" + expectedId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(permissionRequest)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(permissionNotFoundExceptionMessage));
+
+        Mockito.verify(permissionService, Mockito.times(1))
+                .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testUpdate_GivenADuplicatedNameOnBody_ShouldReturnABadRequest() throws Exception {
+        PermissionUpdateRequestDTO permissionRequest = new PermissionUpdateRequestDTO(expectedDescription, List.of());
+        Mockito.when(permissionService
+                        .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class)))
+                .thenThrow(new IllegalArgumentException(permissionDuplicatedExceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put(PERMISSION_BASE_ENDPOINT + "/" + expectedId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(permissionRequest)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(permissionDuplicatedExceptionMessage));
+
+        Mockito.verify(permissionService, Mockito.times(1))
+                .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class));
     }
 }
