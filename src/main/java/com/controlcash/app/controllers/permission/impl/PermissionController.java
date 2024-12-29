@@ -2,6 +2,7 @@ package com.controlcash.app.controllers.permission.impl;
 
 import com.controlcash.app.controllers.permission.IPermissionController;
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
+import com.controlcash.app.dtos.permission.request.PermissionUpdateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.exceptions.PermissionNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,7 +77,7 @@ public class PermissionController implements IPermissionController {
             value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    public ResponseEntity<?> findById(@PathVariable(name = "id") UUID id) {
+    public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
             PermissionResponseDTO permissionResponseDTO = permissionService.findById(id);
             return ResponseEntity.status(HttpStatus.OK).body(permissionResponseDTO);
@@ -83,6 +85,27 @@ public class PermissionController implements IPermissionController {
             ResponseEntityException response = new ResponseEntityException(
                     Instant.now(),
                     permissionNotFoundException.getMessage(),
+                    "uri=/api/permissions/" + id.toString()
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @PutMapping(
+            value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<?> update(
+            @RequestBody PermissionUpdateRequestDTO permissionUpdateRequestDTO,
+            @PathVariable UUID id) {
+        try {
+            PermissionResponseDTO response = permissionService.update(permissionUpdateRequestDTO, id);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (PermissionNotFoundException | IllegalArgumentException exception) {
+            ResponseEntityException response = new ResponseEntityException(
+                    Instant.now(),
+                    exception.getMessage(),
                     "uri=/api/permissions/" + id.toString()
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
