@@ -3,6 +3,7 @@ package com.controlcash.app.controllers.permission.impl;
 import com.controlcash.app.dtos.permission.request.PermissionCreateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
+import com.controlcash.app.exceptions.PermissionNotFoundException;
 import com.controlcash.app.services.PermissionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,12 +45,14 @@ public class PermissionControllerTest {
     private UUID expectedId;
     private String expectedDescription;
     private PermissionResponseDTO permissionResponse;
+    private String permissionNotFoundExceptionMessage;
 
     @BeforeEach
     void setUp() {
         expectedId = UUID.randomUUID();
         expectedDescription = "Foo";
         permissionResponse = new PermissionResponseDTO(expectedId, expectedDescription, List.of());
+        permissionNotFoundExceptionMessage = "Permission not found. Id used: " + expectedId;
     }
 
     @Test
@@ -146,5 +149,39 @@ public class PermissionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].description").value(expectedDescription));
 
         Mockito.verify(permissionService, Mockito.times(1)).findAll(Mockito.any(Pageable.class));
+    }
+
+    @Test
+    void testFindById_GivenAValidId_ShouldReturnAPermissionResponseDTOAndOk() throws Exception{
+        Mockito.when(permissionService.findById(Mockito.any(UUID.class))).thenReturn(permissionResponse);
+
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders.get(PERMISSION_BASE_ENDPOINT + "/" + expectedId));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription));
+
+        Mockito.verify(permissionService, Mockito.times(1)).findById(Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testFindById_GivenAInvalidId_ShouldReturnResponseEntityExceptionAndBadRequest() throws Exception{
+        Mockito.when(permissionService.findById(Mockito.any(UUID.class)))
+                .thenThrow(new PermissionNotFoundException(permissionNotFoundExceptionMessage));
+
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders.get(PERMISSION_BASE_ENDPOINT + "/" + expectedId));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(permissionNotFoundExceptionMessage));
+
+        Mockito.verify(permissionService, Mockito.times(1)).findById(Mockito.any(UUID.class));
     }
 }
