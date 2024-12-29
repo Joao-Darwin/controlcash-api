@@ -251,4 +251,37 @@ public class PermissionControllerTest {
         Mockito.verify(permissionService, Mockito.times(1))
                 .update(Mockito.any(PermissionUpdateRequestDTO.class), Mockito.any(UUID.class));
     }
+
+    @Test
+    void testDelete_GivenAValidId_ShouldReturnAnOk() throws Exception {
+        Mockito.doNothing().when(permissionService).delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders.delete(PERMISSION_BASE_ENDPOINT + "/" + expectedId));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+
+        Mockito.verify(permissionService, Mockito.times(1)).delete(Mockito.any(UUID.class));
+    }
+
+    @Test
+    void testDelete_GivenAnInvalidId_ShouldReturnABadRequest() throws Exception {
+        Mockito.doThrow(new PermissionNotFoundException(permissionNotFoundExceptionMessage))
+                .when(permissionService)
+                .delete(Mockito.any(UUID.class));
+
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders.delete(PERMISSION_BASE_ENDPOINT + "/" + expectedId));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.moment").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(permissionNotFoundExceptionMessage));
+
+        Mockito.verify(permissionService, Mockito.times(1)).delete(Mockito.any(UUID.class));
+    }
 }
