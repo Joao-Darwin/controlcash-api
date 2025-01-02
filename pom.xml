@@ -18,6 +18,7 @@
         <java.version>17</java.version>
         <java.jwt.version>4.4.0</java.jwt.version>
         <jacoco.plugin.version>0.8.10</jacoco.plugin.version>
+        <swagger.version>2.7.0</swagger.version>
     </properties>
 
     <dependencies>
@@ -41,6 +42,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
