@@ -19,16 +19,16 @@ public class OpenApiConfig {
         Contact contact = new Contact()
                 .name("João Darwin")
                 .email("joaodarwin.ip22@gmail.com")
-                .url("joaodarwin.dev");
+                .url("https://joaodarwin.dev");
 
         Info info = new Info()
-                .title("Control Cash API Doc")
+                .title("Control Cash API")
                 .version("v1")
                 .description("API from app Control Cash")
-                .termsOfService("https://")
                 .contact(contact)
                 .license(license);
 
-        return new OpenAPI().info(info);
+        return new OpenAPI()
+                .info(info);
     }
 }
