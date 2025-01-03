@@ -58,7 +58,7 @@ public class UserController implements IUserController {
             @RequestParam(name = "sort", defaultValue = "asc") String sort) {
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "username"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "userName"));
 
         Page<UserAllResponseDTO> userAllResponseDTOS = userService.findAll(pageable);
 
