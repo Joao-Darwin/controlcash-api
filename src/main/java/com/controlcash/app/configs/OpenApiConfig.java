@@ -23,8 +23,9 @@ public class OpenApiConfig {
 
         Info info = new Info()
                 .title("Control Cash API")
-                .version("v1")
                 .description("API from app Control Cash")
+                .summary("API allows you manager your transactions, like payment or entrance. You can separate by categories or create goals for your money")
+                .version("1.0.0")
                 .contact(contact)
                 .license(license);
 
