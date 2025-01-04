@@ -1,0 +1,46 @@
+networks:
+  cca_network:
+    name: cca_network
+
+volumes:
+  cca_volume:
+    name: cca_volume
+
+services:
+  cca_api:
+    container_name: cca_api
+    build: ./
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    depends_on:
+      - cca_postgres
+    command: mvn spring-boot:run
+    restart: always
+    env_file:
+      - .env
+    environment:
+      SPRING.DATASOURCE.URL: ${DATABASE_URL}
+      SPRING.DATASOURCE.USERNAME: ${DATABASE_USER}
+      SPRING.DATASOURCE.PASSWORD: ${DATABASE_PASSWORD}
+    networks:
+      - cca_network
+  cca_postgres:
+    container_name: cca_postgres
+    image: postgres:17.2
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    networks:
+      - cca_network
+    volumes:
+      - cca_volume:/var/lib/postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
