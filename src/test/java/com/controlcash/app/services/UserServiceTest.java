@@ -22,6 +22,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -130,6 +132,28 @@ public class UserServiceTest {
         UserNotFoundException userNotFoundException = Assertions.assertThrows(UserNotFoundException.class, () -> userService.findById(id));
 
         Assertions.assertEquals(userNotFoundExceptionMessage, userNotFoundException.getMessage());
+    }
+
+    @Test
+    void testLoadUserByUsername_GivenAValidUsername_ShouldReturnAnUserDetails() {
+        Mockito.when(userRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.of(user));
+
+        UserDetails userDetails = Assertions.assertDoesNotThrow(() -> userService.loadUserByUsername("fooBar"));
+
+        Assertions.assertNotNull(userDetails);
+        Assertions.assertEquals(user.getUsername(), userDetails.getUsername());
+        Assertions.assertEquals(user.getPassword(), userDetails.getPassword());
+    }
+
+    @Test
+    void testLoadUserByUsername_GivenANotValidUsername_ThrowsAnUsernameNotFoundException() {
+        String expectedUsername = "fooBar";
+        String expectedUsernameNotFoundExceptionMessage = "Email not found. Email used: '" + expectedUsername + "'";
+        Mockito.when(userRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.empty());
+
+        UsernameNotFoundException exception = Assertions.assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername(expectedUsername));
+
+        Assertions.assertEquals(expectedUsernameNotFoundExceptionMessage, exception.getMessage());
     }
 
     @Test
