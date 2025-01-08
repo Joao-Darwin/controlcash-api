@@ -2,6 +2,7 @@ package com.controlcash.app.controllers.auth.impl;
 
 import com.controlcash.app.dtos.auth.request.Credentials;
 import com.controlcash.app.dtos.auth.response.AuthResponse;
+import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.security.jwt.JwtTokenFilter;
 import com.controlcash.app.security.jwt.JwtTokenProvider;
@@ -52,7 +53,9 @@ public class AuthControllerTest {
     private String expectedFullName;
     private String expectedToken;
     private String expectedPermission;
+    private String expectedPassword;
     private boolean expectedIsAuthenticated;
+    private AuthResponse expectedAuthResponse;
     private List<Permission> expectedPermissions;
     private Credentials credentials;
 
@@ -64,14 +67,10 @@ public class AuthControllerTest {
         expectedFullName = "Foo Bar";
         expectedToken = "token";
         expectedPermission = "admin";
+        expectedPassword = "12345";
         expectedIsAuthenticated = true;
         expectedPermissions = List.of(new Permission(UUID.randomUUID(), expectedPermission, List.of()));
-        credentials = new Credentials(expectedEmail, "12345");
-    }
-
-    @Test
-    void testSignIn_GivenValidCredentials_ShouldReturnAnUserAuthenticatedAndOk() throws Exception {
-        AuthResponse authResponse = new AuthResponse(
+        expectedAuthResponse = new AuthResponse(
                 expectedId,
                 expectedEmail,
                 expectedUserName,
@@ -80,7 +79,12 @@ public class AuthControllerTest {
                 expectedIsAuthenticated,
                 expectedPermissions
         );
-        Mockito.when(authService.signIn(Mockito.any(Credentials.class))).thenReturn(authResponse);
+        credentials = new Credentials(expectedEmail, expectedPassword);
+    }
+
+    @Test
+    void testSignIn_GivenValidCredentials_ShouldReturnAnUserAuthenticatedAndOk() throws Exception {
+        Mockito.when(authService.signIn(Mockito.any(Credentials.class))).thenReturn(expectedAuthResponse);
 
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(AUTH_BASE_ENDPOINT + "/" + "signIn")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -115,5 +119,34 @@ public class AuthControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedExceptionMessage));
 
         Mockito.verify(authService, Mockito.times(1)).signIn(Mockito.any(Credentials.class));
+    }
+
+    @Test
+    void testSignUp_GivenValidData_ShouldReturnAnUserAuthenticatedAndOk() throws Exception {
+        UserCreateRequestDTO userCreateRequestDTO = new UserCreateRequestDTO(
+                expectedUserName,
+                expectedEmail,
+                expectedPassword,
+                expectedFullName,
+                1300.0
+        );
+        Mockito.when(authService.signUp(Mockito.any(UserCreateRequestDTO.class))).thenReturn(expectedAuthResponse);
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(AUTH_BASE_ENDPOINT + "/" + "signUp")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userCreateRequestDTO)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(expectedEmail))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userName").value(expectedUserName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fullName").value(expectedFullName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(expectedToken))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isAuthenticated").value(expectedIsAuthenticated))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].authority").value(expectedPermission));
+
+        Mockito.verify(authService, Mockito.times(1)).signUp(Mockito.any(UserCreateRequestDTO.class));
     }
 }
