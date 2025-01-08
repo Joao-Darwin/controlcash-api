@@ -70,7 +70,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void testSignIn_GivenValidCredentials_ShouldReturnAnUserAuthenticated() throws Exception {
+    void testSignIn_GivenValidCredentials_ShouldReturnAnUserAuthenticatedAndOk() throws Exception {
         AuthResponse authResponse = new AuthResponse(
                 expectedId,
                 expectedEmail,
@@ -96,5 +96,24 @@ public class AuthControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(expectedToken))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isAuthenticated").value(expectedIsAuthenticated))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.permissions[0].authority").value(expectedPermission));
+
+        Mockito.verify(authService, Mockito.times(1)).signIn(Mockito.any(Credentials.class));
+    }
+
+    @Test
+    void testSignIn_GivenNotValidCredentials_ShouldReturnAnUserAuthenticatedAndUnauthorized() throws Exception {
+        String expectedExceptionMessage = "Invalid credentials. Email used: '" + credentials.email() + "'. Password used: '" + credentials.password() + "'";
+        Mockito.when(authService.signIn(Mockito.any(Credentials.class))).thenThrow(new IllegalArgumentException(expectedExceptionMessage));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post(AUTH_BASE_ENDPOINT + "/" + "signIn")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(credentials)));
+
+        response
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(expectedExceptionMessage));
+
+        Mockito.verify(authService, Mockito.times(1)).signIn(Mockito.any(Credentials.class));
     }
 }
