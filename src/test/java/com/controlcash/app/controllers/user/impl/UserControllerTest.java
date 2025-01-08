@@ -5,6 +5,8 @@ import com.controlcash.app.dtos.user.response.UserAllResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCompleteResponseDTO;
 import com.controlcash.app.dtos.user.response.UserCreateResponseDTO;
 import com.controlcash.app.exceptions.UserNotFoundException;
+import com.controlcash.app.security.jwt.JwtTokenFilter;
+import com.controlcash.app.security.jwt.JwtTokenProvider;
 import com.controlcash.app.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +46,10 @@ public class UserControllerTest {
 
     @MockBean
     private UserService userService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private JwtTokenFilter jwtTokenFilter;
 
     private String expectedUsername;
     private String expectedFullName;

@@ -3,6 +3,8 @@ package com.controlcash.app.controllers.category.impl;
 import com.controlcash.app.dtos.category.request.CategoryRequestDTO;
 import com.controlcash.app.dtos.category.response.CategoryResponseDTO;
 import com.controlcash.app.exceptions.CategoryNotFoundException;
+import com.controlcash.app.security.jwt.JwtTokenFilter;
+import com.controlcash.app.security.jwt.JwtTokenProvider;
 import com.controlcash.app.services.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +44,10 @@ public class CategoryControllerTest {
 
     @MockBean
     private CategoryService categoryService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private JwtTokenFilter jwtTokenFilter;
 
     private CategoryRequestDTO categoryRequestDTO;
     private CategoryResponseDTO categoryResponseDTO;

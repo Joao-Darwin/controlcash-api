@@ -8,6 +8,8 @@ import com.controlcash.app.exceptions.GoalNotFoundException;
 import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
+import com.controlcash.app.security.jwt.JwtTokenFilter;
+import com.controlcash.app.security.jwt.JwtTokenProvider;
 import com.controlcash.app.services.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +50,10 @@ public class GoalControllerTest {
 
     @MockBean
     private GoalService goalService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private JwtTokenFilter jwtTokenFilter;
 
     private UUID id;
     private GoalCreateRequestDTO goalCreateRequestDTO;

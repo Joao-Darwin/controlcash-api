@@ -5,6 +5,8 @@ import com.controlcash.app.dtos.permission.request.PermissionUpdateRequestDTO;
 import com.controlcash.app.dtos.permission.response.AllPermissionResponseDTO;
 import com.controlcash.app.dtos.permission.response.PermissionResponseDTO;
 import com.controlcash.app.exceptions.PermissionNotFoundException;
+import com.controlcash.app.security.jwt.JwtTokenFilter;
+import com.controlcash.app.security.jwt.JwtTokenProvider;
 import com.controlcash.app.services.PermissionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +42,13 @@ public class PermissionControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+
     @MockBean
     private PermissionService permissionService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private JwtTokenFilter jwtTokenFilter;
 
     private UUID expectedId;
     private String expectedDescription;
