@@ -9,6 +9,8 @@ import com.controlcash.app.models.Category;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
 import com.controlcash.app.models.enums.TransactionType;
+import com.controlcash.app.security.jwt.JwtTokenFilter;
+import com.controlcash.app.security.jwt.JwtTokenProvider;
 import com.controlcash.app.services.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +51,10 @@ public class TransactionControllerTest {
 
     @MockBean
     private TransactionService transactionService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private JwtTokenFilter jwtTokenFilter;
 
     private UUID expectedId;
     private String expectedTransactionNotFoundException;

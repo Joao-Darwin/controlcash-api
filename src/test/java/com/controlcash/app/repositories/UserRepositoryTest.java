@@ -168,6 +168,28 @@ public class UserRepositoryTest {
     }
 
     @Test
+    void testFindByEmail_GivenValidEmail_ShouldReturnAUser() {
+        userRepository.save(user);
+
+        Optional<User> optionalUser = userRepository.findByEmail("user123@gmail.com");
+
+        Assertions.assertTrue(optionalUser.isPresent());
+
+        User actualUser = optionalUser.get();
+
+        Assertions.assertNotNull(actualUser.getId());
+        Assertions.assertEquals(user.getUsername(), actualUser.getUsername());
+        Assertions.assertEquals(user.getPassword(), actualUser.getPassword());
+        Assertions.assertEquals(user.getSalary(), actualUser.getSalary());
+        Assertions.assertEquals(user.getEmail(), actualUser.getEmail());
+        Assertions.assertEquals(user.getFullName(), actualUser.getFullName());
+        Assertions.assertFalse(actualUser.isEnabled());
+        Assertions.assertFalse(actualUser.isAccountNonExpired());
+        Assertions.assertFalse(actualUser.isAccountNonLocked());
+        Assertions.assertFalse(actualUser.isCredentialsNonExpired());
+    }
+
+    @Test
     void testUpdateUser_ShouldReturnTheUpdatedUser() {
         user = userRepository.save(user);
         user.setFullName("Another full name");

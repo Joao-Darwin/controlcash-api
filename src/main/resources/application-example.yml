@@ -1,6 +1,11 @@
 cors:
   origins:
 path-api: "/api"
+security:
+  jwt:
+    token:
+      secret-key: secret
+      expire-length: 3600000
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
