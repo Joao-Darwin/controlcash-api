@@ -7,7 +7,6 @@ import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.UserRepository;
 import com.controlcash.app.security.jwt.JwtTokenProvider;
-import com.controlcash.app.utils.converters.UserConverter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -38,8 +37,6 @@ public class AuthServiceTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private UserConverter userConverter;
 
     @InjectMocks
     private AuthService authService;
@@ -53,12 +50,7 @@ public class AuthServiceTest {
     private String expectedPassword;
     private String expectedExceptionMessage;
     private Double expectedSalary;
-    private boolean expectedAccountNonExpired;
-    private boolean expectedAccountNonLocked;
-    private boolean expectedCredentialsNonExpired;
-    private boolean expectedEnabled;
     private boolean expectedIsAuthenticated;
-    private AuthResponse expectedAuthResponse;
     private List<Permission> expectedPermissions;
     private Credentials credentials;
     private User user;
@@ -73,21 +65,9 @@ public class AuthServiceTest {
         expectedPermission = "admin";
         expectedPassword = "12345";
         expectedExceptionMessage = "Invalid credentials. Email used: '" + expectedEmail + "'. Password used: '" + expectedPassword + "'";
-        expectedAccountNonExpired = false;
-        expectedAccountNonLocked = false;
-        expectedCredentialsNonExpired = false;
-        expectedEnabled = false;
+        expectedSalary = 1300.0;
         expectedIsAuthenticated = true;
         expectedPermissions = List.of(new Permission(UUID.randomUUID(), expectedPermission, List.of()));
-        expectedAuthResponse = new AuthResponse(
-                expectedId,
-                expectedEmail,
-                expectedUserName,
-                expectedFullName,
-                expectedToken,
-                expectedIsAuthenticated,
-                expectedPermissions
-        );
         credentials = new Credentials(expectedEmail, expectedPassword);
         user = new User(
                 expectedId,
@@ -96,10 +76,10 @@ public class AuthServiceTest {
                 expectedPassword,
                 expectedFullName,
                 expectedSalary,
-                expectedAccountNonExpired,
-                expectedAccountNonLocked,
-                expectedCredentialsNonExpired,
-                expectedEnabled,
+                false,
+                false,
+                false,
+                false,
                 expectedPermissions,
                 List.of(),
                 List.of()
@@ -121,6 +101,7 @@ public class AuthServiceTest {
         Assertions.assertEquals(expectedToken, response.token());
         Assertions.assertEquals(expectedIsAuthenticated, response.isAuthenticated());
         Assertions.assertEquals(expectedPermissions.size(), response.permissions().size());
+        Assertions.assertEquals(expectedPermission, response.permissions().get(0).getAuthority());
 
         Mockito.verify(userRepository, Mockito.only()).findByEmail(Mockito.anyString());
         Mockito.verify(passwordEncoder, Mockito.only()).matches(Mockito.anyString(), Mockito.anyString());
@@ -179,6 +160,7 @@ public class AuthServiceTest {
         Assertions.assertEquals(expectedToken, response.token());
         Assertions.assertEquals(expectedIsAuthenticated, response.isAuthenticated());
         Assertions.assertEquals(expectedPermissions.size(), response.permissions().size());
+        Assertions.assertEquals(expectedPermission, response.permissions().get(0).getAuthority());
 
         Mockito.verify(passwordEncoder, Mockito.only()).encode(Mockito.anyString());
         Mockito.verify(userRepository, Mockito.only()).save(Mockito.any());
