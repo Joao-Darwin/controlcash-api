@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class AuthServiceTest {
     private String expectedToken;
     private String expectedPermission;
     private String expectedPassword;
+    private String expectedExceptionMessage;
     private Double expectedSalary;
     private boolean expectedAccountNonExpired;
     private boolean expectedAccountNonLocked;
@@ -66,6 +68,7 @@ public class AuthServiceTest {
         expectedToken = "token";
         expectedPermission = "admin";
         expectedPassword = "12345";
+        expectedExceptionMessage = "Invalid credentials. Email used: '" + expectedEmail + "'. Password used: '" + expectedPassword + "'";
         expectedAccountNonExpired = false;
         expectedAccountNonLocked = false;
         expectedCredentialsNonExpired = false;
@@ -114,5 +117,41 @@ public class AuthServiceTest {
         Assertions.assertEquals(expectedToken, response.token());
         Assertions.assertEquals(expectedIsAuthenticated, response.isAuthenticated());
         Assertions.assertEquals(expectedPermissions.size(), response.permissions().size());
+
+        Mockito.verify(userRepository, Mockito.only()).findByEmail(Mockito.anyString());
+        Mockito.verify(passwordEncoder, Mockito.only()).matches(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(authenticationManager, Mockito.only()).authenticate(Mockito.any(Authentication.class));
+        Mockito.verify(jwtTokenProvider, Mockito.only()).createToken(Mockito.anyString(), Mockito.anyList());
+    }
+
+    @Test
+    void testSignIn_GivenANotValidEmail_ShouldThrowsAnIllegalArgumentException() {
+        Mockito.when(userRepository.findByEmail(Mockito.anyString()))
+                .thenThrow(new IllegalArgumentException(expectedExceptionMessage));
+
+        IllegalArgumentException expectedException = Assertions.assertThrows(IllegalArgumentException.class, () -> authService.signIn(credentials));
+
+        Assertions.assertEquals(expectedExceptionMessage, expectedException.getMessage());
+
+        Mockito.verify(userRepository, Mockito.only()).findByEmail(Mockito.anyString());
+        Mockito.verify(passwordEncoder, Mockito.never()).matches(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(authenticationManager, Mockito.never()).authenticate(Mockito.any(Authentication.class));
+        Mockito.verify(jwtTokenProvider, Mockito.never()).createToken(Mockito.anyString(), Mockito.anyList());
+    }
+
+    @Test
+    void testSignIn_GivenANotValidPassword_ShouldThrowsAnIllegalArgumentException() {
+        Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(passwordEncoder.matches(Mockito.anyString(), Mockito.anyString()))
+                .thenThrow(new IllegalArgumentException(expectedExceptionMessage));
+
+        IllegalArgumentException expectedException = Assertions.assertThrows(IllegalArgumentException.class, () -> authService.signIn(credentials));
+
+        Assertions.assertEquals(expectedExceptionMessage, expectedException.getMessage());
+
+        Mockito.verify(userRepository, Mockito.only()).findByEmail(Mockito.anyString());
+        Mockito.verify(passwordEncoder, Mockito.only()).matches(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(authenticationManager, Mockito.never()).authenticate(Mockito.any(Authentication.class));
+        Mockito.verify(jwtTokenProvider, Mockito.never()).createToken(Mockito.anyString(), Mockito.anyList());
     }
 }
