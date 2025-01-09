@@ -2,10 +2,12 @@ package com.controlcash.app.services;
 
 import com.controlcash.app.dtos.auth.request.Credentials;
 import com.controlcash.app.dtos.auth.response.AuthResponse;
+import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.UserRepository;
 import com.controlcash.app.security.jwt.JwtTokenProvider;
+import com.controlcash.app.utils.converters.UserConverter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -36,6 +38,8 @@ public class AuthServiceTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private UserConverter userConverter;
 
     @InjectMocks
     private AuthService authService;
@@ -126,8 +130,7 @@ public class AuthServiceTest {
 
     @Test
     void testSignIn_GivenANotValidEmail_ShouldThrowsAnIllegalArgumentException() {
-        Mockito.when(userRepository.findByEmail(Mockito.anyString()))
-                .thenThrow(new IllegalArgumentException(expectedExceptionMessage));
+        Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
 
         IllegalArgumentException expectedException = Assertions.assertThrows(IllegalArgumentException.class, () -> authService.signIn(credentials));
 
@@ -142,8 +145,7 @@ public class AuthServiceTest {
     @Test
     void testSignIn_GivenANotValidPassword_ShouldThrowsAnIllegalArgumentException() {
         Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(user));
-        Mockito.when(passwordEncoder.matches(Mockito.anyString(), Mockito.anyString()))
-                .thenThrow(new IllegalArgumentException(expectedExceptionMessage));
+        Mockito.when(passwordEncoder.matches(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
 
         IllegalArgumentException expectedException = Assertions.assertThrows(IllegalArgumentException.class, () -> authService.signIn(credentials));
 
@@ -153,5 +155,34 @@ public class AuthServiceTest {
         Mockito.verify(passwordEncoder, Mockito.only()).matches(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(authenticationManager, Mockito.never()).authenticate(Mockito.any(Authentication.class));
         Mockito.verify(jwtTokenProvider, Mockito.never()).createToken(Mockito.anyString(), Mockito.anyList());
+    }
+
+    @Test
+    void testSignUp_GivenAUser_ShouldReturnAnAuthResponse() {
+        UserCreateRequestDTO userToCreate = new UserCreateRequestDTO(
+                expectedUserName,
+                expectedEmail,
+                expectedPassword,
+                expectedFullName,
+                expectedSalary
+        );
+        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn("");
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
+        Mockito.when(jwtTokenProvider.createToken(Mockito.anyString(), Mockito.anyList())).thenReturn(expectedToken);
+
+        AuthResponse response = authService.signUp(userToCreate);
+
+        Assertions.assertEquals(expectedId, response.id());
+        Assertions.assertEquals(expectedEmail, response.email());
+        Assertions.assertEquals(expectedUserName, response.userName());
+        Assertions.assertEquals(expectedFullName, response.fullName());
+        Assertions.assertEquals(expectedToken, response.token());
+        Assertions.assertEquals(expectedIsAuthenticated, response.isAuthenticated());
+        Assertions.assertEquals(expectedPermissions.size(), response.permissions().size());
+
+        Mockito.verify(passwordEncoder, Mockito.only()).encode(Mockito.anyString());
+        Mockito.verify(userRepository, Mockito.only()).save(Mockito.any());
+        Mockito.verify(authenticationManager, Mockito.only()).authenticate(Mockito.any(Authentication.class));
+        Mockito.verify(jwtTokenProvider, Mockito.only()).createToken(Mockito.anyString(), Mockito.anyList());
     }
 }
