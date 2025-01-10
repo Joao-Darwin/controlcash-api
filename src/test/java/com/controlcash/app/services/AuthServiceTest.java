@@ -3,8 +3,10 @@ package com.controlcash.app.services;
 import com.controlcash.app.dtos.auth.request.Credentials;
 import com.controlcash.app.dtos.auth.response.AuthResponse;
 import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
+import com.controlcash.app.exceptions.PermissionNotFoundException;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
+import com.controlcash.app.repositories.PermissionRepository;
 import com.controlcash.app.repositories.UserRepository;
 import com.controlcash.app.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +34,8 @@ public class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
+    private PermissionRepository permissionRepository;
+    @Mock
     private AuthenticationManager authenticationManager;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
@@ -46,11 +50,12 @@ public class AuthServiceTest {
     private String expectedUserName;
     private String expectedFullName;
     private String expectedToken;
-    private String expectedPermission;
+    private String expectedPermissionName;
     private String expectedPassword;
     private String expectedExceptionMessage;
     private Double expectedSalary;
     private boolean expectedIsAuthenticated;
+    private Permission expectedPermission;
     private List<Permission> expectedPermissions;
     private Credentials credentials;
     private User user;
@@ -62,12 +67,13 @@ public class AuthServiceTest {
         expectedUserName = "foobar";
         expectedFullName = "Foo Bar";
         expectedToken = "token";
-        expectedPermission = "admin";
+        expectedPermissionName = "admin";
         expectedPassword = "12345";
         expectedExceptionMessage = "Invalid credentials. Email used: '" + expectedEmail + "'. Password used: '" + expectedPassword + "'";
         expectedSalary = 1300.0;
         expectedIsAuthenticated = true;
-        expectedPermissions = List.of(new Permission(UUID.randomUUID(), expectedPermission, List.of()));
+        expectedPermission = new Permission(UUID.randomUUID(), expectedPermissionName, List.of());
+        expectedPermissions = List.of(expectedPermission);
         credentials = new Credentials(expectedEmail, expectedPassword);
         user = new User(
                 expectedId,
@@ -101,7 +107,7 @@ public class AuthServiceTest {
         Assertions.assertEquals(expectedToken, response.token());
         Assertions.assertEquals(expectedIsAuthenticated, response.isAuthenticated());
         Assertions.assertEquals(expectedPermissions.size(), response.permissions().size());
-        Assertions.assertEquals(expectedPermission, response.permissions().get(0).getAuthority());
+        Assertions.assertEquals(expectedPermissionName, response.permissions().get(0).getAuthority());
 
         Mockito.verify(userRepository, Mockito.only()).findByEmail(Mockito.anyString());
         Mockito.verify(passwordEncoder, Mockito.only()).matches(Mockito.anyString(), Mockito.anyString());
@@ -147,6 +153,7 @@ public class AuthServiceTest {
                 expectedFullName,
                 expectedSalary
         );
+        Mockito.when(permissionRepository.findPermissionByDescription(Mockito.anyString())).thenReturn(Optional.of(expectedPermission));
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn("");
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
         Mockito.when(jwtTokenProvider.createToken(Mockito.anyString(), Mockito.anyList())).thenReturn(expectedToken);
@@ -160,11 +167,35 @@ public class AuthServiceTest {
         Assertions.assertEquals(expectedToken, response.token());
         Assertions.assertEquals(expectedIsAuthenticated, response.isAuthenticated());
         Assertions.assertEquals(expectedPermissions.size(), response.permissions().size());
-        Assertions.assertEquals(expectedPermission, response.permissions().get(0).getAuthority());
+        Assertions.assertEquals(expectedPermissionName, response.permissions().get(0).getAuthority());
 
+        Mockito.verify(permissionRepository, Mockito.only()).findPermissionByDescription(Mockito.anyString());
         Mockito.verify(passwordEncoder, Mockito.only()).encode(Mockito.anyString());
         Mockito.verify(userRepository, Mockito.only()).save(Mockito.any());
         Mockito.verify(authenticationManager, Mockito.only()).authenticate(Mockito.any(Authentication.class));
         Mockito.verify(jwtTokenProvider, Mockito.only()).createToken(Mockito.anyString(), Mockito.anyList());
+    }
+
+    @Test
+    void testSignUp_WhenPermissionNotExists_ShouldThrowsAnPermissionNotFoundException() {
+        String expectedExceptionMessage = "Permission 'user' was not found";
+        UserCreateRequestDTO userToCreate = new UserCreateRequestDTO(
+                expectedUserName,
+                expectedEmail,
+                expectedPassword,
+                expectedFullName,
+                expectedSalary
+        );
+        Mockito.when(permissionRepository.findPermissionByDescription(Mockito.anyString())).thenThrow(new PermissionNotFoundException("Permission 'user' was not found"));
+
+        PermissionNotFoundException exception = Assertions.assertThrows(PermissionNotFoundException.class, () -> authService.signUp(userToCreate));
+
+        Assertions.assertEquals(expectedExceptionMessage, exception.getMessage());
+
+        Mockito.verify(permissionRepository, Mockito.only()).findPermissionByDescription(Mockito.anyString());
+        Mockito.verify(passwordEncoder, Mockito.never()).encode(Mockito.anyString());
+        Mockito.verify(userRepository, Mockito.never()).save(Mockito.any());
+        Mockito.verify(authenticationManager, Mockito.never()).authenticate(Mockito.any(Authentication.class));
+        Mockito.verify(jwtTokenProvider, Mockito.never()).createToken(Mockito.anyString(), Mockito.anyList());
     }
 }
