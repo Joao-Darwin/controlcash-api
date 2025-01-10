@@ -40,7 +40,7 @@ public class AuthService {
 
         if (!passwordEncoder.matches(credentials.password(), user.getPassword())) throw new IllegalArgumentException(getCredentialsExceptionMessage(credentials));
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credentials.email(), credentials.password()));
 
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoles());
 
@@ -62,11 +62,16 @@ public class AuthService {
     public AuthResponse signUp(UserCreateRequestDTO userToCreate) {
         User user = UserConverter.convertUserCreateRequestDTOToUser(userToCreate);
 
+        Optional<Permission> optionalPermission = permissionRepository.findPermissionByDescription("user");
+        Permission permission = optionalPermission.orElseGet(() -> permissionRepository.save(new Permission(null, "user", List.of())));
+
+        user.setPermissions(List.of(permission));
+
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
         user = userRepository.save(user);
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userToCreate.email(), userToCreate.password()));
 
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoles());
 
