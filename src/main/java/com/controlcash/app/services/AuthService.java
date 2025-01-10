@@ -3,7 +3,9 @@ package com.controlcash.app.services;
 import com.controlcash.app.dtos.auth.request.Credentials;
 import com.controlcash.app.dtos.auth.response.AuthResponse;
 import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
+import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
+import com.controlcash.app.repositories.PermissionRepository;
 import com.controlcash.app.repositories.UserRepository;
 import com.controlcash.app.security.jwt.JwtTokenProvider;
 import com.controlcash.app.utils.converters.UserConverter;
@@ -13,19 +15,22 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PermissionRepository permissionRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    AuthService(UserRepository userRepository, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+    AuthService(UserRepository userRepository, PermissionRepository permissionRepository, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.permissionRepository = permissionRepository;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
