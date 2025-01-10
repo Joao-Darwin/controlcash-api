@@ -3,6 +3,7 @@ package com.controlcash.app.services;
 import com.controlcash.app.dtos.auth.request.Credentials;
 import com.controlcash.app.dtos.auth.response.AuthResponse;
 import com.controlcash.app.dtos.user.request.UserCreateRequestDTO;
+import com.controlcash.app.exceptions.PermissionNotFoundException;
 import com.controlcash.app.models.Permission;
 import com.controlcash.app.models.User;
 import com.controlcash.app.repositories.PermissionRepository;
@@ -68,7 +69,7 @@ public class AuthService {
         User user = UserConverter.convertUserCreateRequestDTOToUser(userToCreate);
 
         Optional<Permission> optionalPermission = permissionRepository.findPermissionByDescription("user");
-        Permission permission = optionalPermission.orElseGet(() -> permissionRepository.save(new Permission(null, "user", List.of())));
+        Permission permission = optionalPermission.orElseThrow(() -> new PermissionNotFoundException("Permission 'user' was not found"));
 
         user.setPermissions(List.of(permission));
 
