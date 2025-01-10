@@ -1,5 +1,6 @@
 package com.controlcash.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,6 +30,7 @@ public class Permission implements GrantedAuthority, Serializable {
     @Column(nullable = false, unique = true)
     private String description;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     private List<User> users;
 
